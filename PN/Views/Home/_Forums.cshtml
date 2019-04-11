@@ -1,0 +1,34 @@
+﻿@using PN.Controllers.Helpers
+@model IEnumerable<PN.Models.Forum>
+
+<h1 class="title">Foros</h1>
+<hr class="title" />
+@*<div class="separator"></div>*@
+
+@foreach (var forum in Model)
+{
+    <div class="box-button topic">
+        <a href="/Tag/Index/@forum.Id">
+            <img class="img-responsive img-fill" src="@Url.Content(forum.ImagePath)" alt="Imagen Tema" />
+        </a>
+        <h3>@forum.Name</h3>
+        @if (User.Identity.IsUserInRole("Admin"))
+        {
+            @Html.ActionLink("Edit", "Edit", "Forum", new { id = forum.Id }, new { @class = "btn btn-info navbar-btn" })
+            @Html.ActionLink("Details", "Details", "Forum", new { id = forum.Id }, new { @class = "btn btn-info navbar-btn" })
+            @Html.ActionLink("Delete", "Delete", "Forum", new { id = forum.Id }, new { @class = "btn btn-info navbar-btn" })
+        }
+        @Html.ActionLink("Unirse", "Subscribe", new { id = forum.Id }, new { @class = "btn btn-info navbar-btn" })
+    </div>
+}
+
+@if (User.Identity.IsUserInRole("Admin"))
+{
+    <div class="box-button topic">
+        <img class="img-responsive img-fill" alt="Imagen Tema" />
+        <a href="/Forum/Create" class="btn btn-info navbar-btn">
+            <h3>Crear un Tag</h3>
+        </a>
+    </div>
+}
+<div class="clearfix"></div>
