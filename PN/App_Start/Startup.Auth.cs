@@ -1,11 +1,15 @@
-﻿using System;
+﻿using Owin;
+using System;
+using PN.Models;
+using PN.Services;
+using Microsoft.Owin;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
-using Owin;
-using PN.Models;
+using Microsoft.Owin.Security.Twitter;
+using Microsoft.Owin.Security.Facebook;
+using Microsoft.Owin.Security.MicrosoftAccount;
 
 namespace PN
 {
