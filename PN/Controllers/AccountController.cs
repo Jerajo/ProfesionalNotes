@@ -1,14 +1,13 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using PN.Models;
+using PN.Services;
 using System.Web;
+using System.Linq;
 using System.Web.Mvc;
+using System.Threading.Tasks;
+using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using PN.Models;
+using System.Collections.Generic;
 
 namespace PN.Controllers
 {
@@ -27,6 +26,10 @@ namespace PN.Controllers
             UserManager = userManager;
             SignInManager = signInManager;
         }
+
+        #region SETTERS AND GETTERS
+
+        private AppDbContext db = new AppDbContext();
 
         public ApplicationSignInManager SignInManager
         {
@@ -52,6 +55,14 @@ namespace PN.Controllers
             }
         }
 
+        #endregion
+
+        // Lista de Usuarios
+        public ActionResult Index()
+        {
+            return View();
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]
@@ -68,14 +79,24 @@ namespace PN.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            string userName = model.UserNameEmail;
 
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            if (ModelState.IsValid)
+            {
+                if (userName.IndexOf('@') > -1)
+                {
+                    var user = await UserManager.FindByEmailAsync(model.UserNameEmail);
+                    if (user == null)
+                    {
+                        ModelState.AddModelError("", "Invalid login attempt.");
+                        return View(model);
+                    }
+                    else userName = user.UserName;
+                }
+            }
+            else return View(model);
+
+            var result = await SignInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, shouldLockout: true);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -139,7 +160,29 @@ namespace PN.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            return View();
+            var model = new RegisterViewModel
+            {
+                Sexes = new List<SelectListItem>()
+                {
+                    new SelectListItem()
+                    {
+                        Value = null,
+                        Text = "-- Select your sex --"
+                    },
+                    new SelectListItem()
+                    {
+                        Value = "m",
+                        Text = "Male"
+                    },
+                    new SelectListItem()
+                    {
+                        Value = "f",
+                        Text = "Female"
+                    }
+                }
+            };
+
+            return View(model);
         }
 
         //
@@ -151,19 +194,25 @@ namespace PN.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
-                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    // Linkea la cuenta remota con la local
+                    var r = await db.StoredProcedureRegisterUser(user.Id, model.Sex.ToString());
 
-                    return RedirectToAction("Index", "Home");
+                    if (r)
+                    {
+                        await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                        // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 AddErrors(result);
             }
@@ -450,35 +499,6 @@ namespace PN.Controllers
                 return Redirect(returnUrl);
             }
             return RedirectToAction("Index", "Home");
-        }
-
-        internal class ChallengeResult : HttpUnauthorizedResult
-        {
-            public ChallengeResult(string provider, string redirectUri)
-                : this(provider, redirectUri, null)
-            {
-            }
-
-            public ChallengeResult(string provider, string redirectUri, string userId)
-            {
-                LoginProvider = provider;
-                RedirectUri = redirectUri;
-                UserId = userId;
-            }
-
-            public string LoginProvider { get; set; }
-            public string RedirectUri { get; set; }
-            public string UserId { get; set; }
-
-            public override void ExecuteResult(ControllerContext context)
-            {
-                var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
-                if (UserId != null)
-                {
-                    properties.Dictionary[XsrfKey] = UserId;
-                }
-                context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
-            }
         }
         #endregion
     }
