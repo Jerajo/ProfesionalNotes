@@ -1,0 +1,37 @@
+﻿@using PN.Controllers.Helpers
+@model IEnumerable<PN.Models.Tag>
+@{
+    ViewBag.Title = "Temas";
+}
+
+<h1 class="title">TEMAS</h1>
+<hr class="title" />
+@*<div class="separator"></div>*@
+
+@foreach (var tag in Model)
+{
+    <div class="box-button topic">
+        <a href="/Post/Index/@tag.Id">
+            <img class="img-responsive img-fill" src="@Url.Content(tag.ImagePath)" alt="Imagen Tema" />
+        </a>
+        <h3>@tag.Name</h3>
+        @if (User.Identity.IsUserInRole("Admin"))
+        {
+            @Html.ActionLink("Edit", "Edit", new { id = tag.Id }, new { @class = "btn btn-info navbar-btn" })
+            @Html.ActionLink("Details", "Details", new { id = tag.Id }, new { @class = "btn btn-info navbar-btn" })
+            @Html.ActionLink("Delete", "Delete", new { id = tag.Id }, new { @class = "btn btn-info navbar-btn" })
+        }
+        @Html.ActionLink("Subcribirse", "Subscribe", new { id = tag.Id }, new { @class = "btn btn-info navbar-btn" })
+    </div>
+}
+
+@if (User.Identity.IsUserInRole("Admin"))
+{
+    <div class="box-button topic">
+        <img class="img-responsive img-fill" alt="Imagen Tema" />
+        <a href="/Tag/Create" class="btn btn-info navbar-btn">
+            <h3>Crear un Tag</h3>
+        </a>
+    </div>
+}
+<div class="clearfix"></div>
