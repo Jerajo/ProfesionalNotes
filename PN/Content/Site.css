@@ -1,12 +1,13 @@
 ﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+  
 }
 
 /* Set padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+.container.body-content {
+  padding-top: 100px;
+  padding-bottom: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -16,9 +17,84 @@
     white-space: normal;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
+/* -------------------------------- Barra de Navegación -------------------------------- */
+.navbar-header > a,
+.navbar-header > .busqueda {
+  /*position: relative;
+  display: block;
+  float: left;
+  padding: 10px 15px;*/
+  opacity: 0.8;
 }
+
+.navbar-header > a:hover,
+.navbar-header > .busqueda:hover {
+  opacity: 1;
+}
+
+.nav > li {
+  /*position: relative;
+  display: block;
+  padding: 10px 15px;*/
+  opacity: 0.8;
+}
+
+.nav > li:hover,
+.nav > li:focus,
+.navbar > li:hover,
+.navbar > li:focus {
+  opacity: 1;
+}
+
+/* -------------------------------- Barra de Busqueda -------------------------------- */
+
+
+/* -------------------------------- Botones y Mouse -------------------------------- */
+.imagebutton:hover,
+.box-button:hover {
+  cursor: pointer;
+}
+
+label {
+  cursor: inherit;
+}
+
+/* -------------------------------- PAGE -------------------------------- */
+/* Páginas o secciones (div) que ocupán todo el alto de la ventana divididos en #regiones
+   que se navegan con la rueda del ratón.
+*/
+
+/* -------------------------------- TÍTULOS -------------------------------- */
+h1.title {
+  font-family: 'Copperplate Gothic Bold';
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+hr.title {
+  border: solid 4px;
+  margin: 0px;
+  margin-bottom: 20px;
+}
+
+div.separator {
+  height: 4px;
+  margin: 0px;
+  margin-bottom: 20px;
+}
+
+/* -------------------------------- TEMAS -------------------------------- */
+.box-button.topic {
+  display: block;
+  float: left;
+  border: solid 1px;
+  /*marging: U R D L */
+  margin: 0 2% 2% 0;
+  width: 23%;
+}
+
+.topic > h3 {
+  margin: 10px 0px;
+  text-align: center;
+}
+

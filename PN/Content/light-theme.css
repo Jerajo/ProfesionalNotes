@@ -1,0 +1,39 @@
+﻿/* -------------------------------- TODO -------------------------------- */
+* {
+  border-color: #000;
+  color: #000;
+}
+
+/* -------------------------------- CUERPO -------------------------------- */
+body {
+  background-color: #fff;
+  color: #000;
+}
+
+/* -------------------------------- Barra de Navegación -------------------------------- */
+.navbar,
+.navbar-default.navbar-text {
+  background-color: #f2f2f2;
+  color: #000;
+}
+
+.busqueda > input {
+  border: solid 2px #000;
+  background-color: #f2f2f2;
+  color: #000;
+}
+
+/* -------------------------------- TÍTULOS -------------------------------- */
+hr.title {
+  color: #000;
+}
+
+div.separator {
+  background: linear-gradient(to left, #fff, #000, #fff);
+}
+
+/* -------------------------------- TEMAS -------------------------------- */
+.box-button.topic {
+  background-color: #f2f2f2;
+  border-color: #000;
+}
