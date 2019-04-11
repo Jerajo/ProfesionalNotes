@@ -1,12 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using PN.Models;
+using PN.Services;
 using System.Web;
+using System.Linq;
 using System.Web.Mvc;
+using System.Threading.Tasks;
+using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using PN.Models;
 
 namespace PN.Controllers
 {
@@ -16,9 +16,7 @@ namespace PN.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
-        public ManageController()
-        {
-        }
+        public ManageController() { }
 
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
@@ -26,15 +24,17 @@ namespace PN.Controllers
             SignInManager = signInManager;
         }
 
+        #region SETTERS AND GETTERS
+
         public ApplicationSignInManager SignInManager
         {
             get
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -49,6 +49,8 @@ namespace PN.Controllers
                 _userManager = value;
             }
         }
+
+        #endregion
 
         //
         // GET: /Manage/Index
@@ -306,7 +308,7 @@ namespace PN.Controllers
         public ActionResult LinkLogin(string provider)
         {
             // Request a redirect to the external login provider to link a login for the current user
-            return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), User.Identity.GetUserId());
+            return new ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), User.Identity.GetUserId());
         }
 
         //
@@ -333,9 +335,9 @@ namespace PN.Controllers
             base.Dispose(disposing);
         }
 
-#region Helpers
+        #region Helpers
         // Used for XSRF protection when adding external logins
-        private const string XsrfKey = "XsrfId";
+        private const string XsrfKey = "FrJpM";
 
         private IAuthenticationManager AuthenticationManager
         {
@@ -384,6 +386,6 @@ namespace PN.Controllers
             Error
         }
 
-#endregion
+        #endregion
     }
 }
