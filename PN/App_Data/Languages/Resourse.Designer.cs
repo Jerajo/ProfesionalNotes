@@ -61,11 +61,65 @@ namespace Languages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Valor en español.
+        ///   Looks up a localized string similar to Cuenta de Usuario.
         /// </summary>
-        public static string String1 {
+        public static string AccountTitles {
             get {
-                return ResourceManager.GetString("String1", resourceCulture);
+                return ResourceManager.GetString("AccountTitles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Foros.
+        /// </summary>
+        public static string ForumTitles {
+            get {
+                return ResourceManager.GetString("ForumTitles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inicio.
+        /// </summary>
+        public static string HomeTitles {
+            get {
+                return ResourceManager.GetString("HomeTitles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Términos y condiciones.
+        /// </summary>
+        public static string PoliciesTitles {
+            get {
+                return ResourceManager.GetString("PoliciesTitles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Articulos.
+        /// </summary>
+        public static string PostTitles {
+            get {
+                return ResourceManager.GetString("PostTitles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Temas.
+        /// </summary>
+        public static string TagTitles {
+            get {
+                return ResourceManager.GetString("TagTitles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Usuarios.
+        /// </summary>
+        public static string UserTitles {
+            get {
+                return ResourceManager.GetString("UserTitles", resourceCulture);
             }
         }
     }

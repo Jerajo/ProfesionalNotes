@@ -1,0 +1,37 @@
+﻿{
+    "HomeTitles": {
+        "es": "Inicio",
+        "en": "Home",
+        "fr": "Accueil"
+    },
+    "ForumTitles": {
+        "es": "Foros",
+        "en": "Forums",
+        "fr": "Forums"
+    },
+    "TagTitles": {
+        "es": "Temas",
+        "en": "Topics",
+        "fr": "Sujets"
+    },
+    "PostTitles": {
+        "es": "Artículos",
+        "en": "Articles",
+        "fr": "Articles"
+    },
+    "UserTitles": {
+        "es": "Usuarios",
+        "en": "Users",
+        "fr": "Utilisateurs"
+    },
+    "AccountTitles": {
+        "es": "Cuenta",
+        "en": "Account",
+        "fr": "Compte"
+    },
+    "PoliciesTitles": {
+        "es": "TérminosYCondiciones",
+        "en": "TermsAndConditions",
+        "fr": "TermesEtConditions"
+    }
+}

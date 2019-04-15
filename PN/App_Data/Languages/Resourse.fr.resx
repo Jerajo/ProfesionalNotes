@@ -118,24 +118,24 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccountTitles" xml:space="preserve">
-    <value>Cuenta de Usuario</value>
+    <value>Compte</value>
   </data>
   <data name="ForumTitles" xml:space="preserve">
-    <value>Foros</value>
+    <value>Forums</value>
   </data>
   <data name="HomeTitles" xml:space="preserve">
-    <value>Inicio</value>
+    <value>Accueil</value>
   </data>
   <data name="PoliciesTitles" xml:space="preserve">
-    <value>Términos y condiciones</value>
+    <value>Termes et conditions</value>
   </data>
   <data name="PostTitles" xml:space="preserve">
-    <value>Articulos</value>
+    <value>Articles</value>
   </data>
   <data name="TagTitles" xml:space="preserve">
-    <value>Temas</value>
+    <value>Sujets</value>
   </data>
   <data name="UserTitles" xml:space="preserve">
-    <value>Usuarios</value>
+    <value>Utilisateurs</value>
   </data>
 </root>
