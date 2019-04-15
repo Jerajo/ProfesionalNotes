@@ -1,10 +1,14 @@
 using System;
 using System.Data.Entity;
+using Audit.EntityFramework;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Data.Entity.Validation;
+using System.Data.Entity.Infrastructure;
 
 namespace PN.Models
 {
-    public partial class AppDbContext : DbContext
+    public partial class AppDbContext : AuditDbContext
     {
         public AppDbContext() : base("name=EntityConnection") { }
 
@@ -138,7 +142,33 @@ namespace PN.Models
             modelBuilder.Entity<UserInformationView>()
                 .Property(e => e.EditionTitle)
                 .IsUnicode(false);
+
+            base.OnModelCreating(modelBuilder);
         }
+
+        protected override bool ShouldValidateEntity(DbEntityEntry entityEntry)
+        {
+            if (entityEntry.State == EntityState.Deleted) return true;
+
+            return base.ShouldValidateEntity(entityEntry);  
+        }
+
+        protected override DbEntityValidationResult ValidateEntity(DbEntityEntry entityEntry, IDictionary<object, object> items)
+        {
+            if (entityEntry.Entity is UserInformation)
+            {
+                return new DbEntityValidationResult(entityEntry, new DbValidationError[] 
+                {
+                    new DbValidationError("Name","No se puede borrar un usuario")
+                });
+            }
+
+            return base.ValidateEntity(entityEntry, items);
+        }
+        
+        #endregion
+
+        #region Auxiliary Methods
 
         #endregion
 
