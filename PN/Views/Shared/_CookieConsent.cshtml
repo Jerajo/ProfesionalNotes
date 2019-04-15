@@ -1,10 +1,8 @@
 ﻿@{
-    //var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
-    //var showBanner = !consentFeature?.CanTrack ?? false;
-    var cookieString = "Este sitio utiliza cookies para una mejor experiencia de usuario.";//consentFeature?.CreateConsentCookie();
+    var cookieString = Request.Cookies["cookieString"]?.Value;
 }
 
-@if (true)
+@if (string.IsNullOrEmpty(cookieString))
 {
     <nav id="cookieConsent" class="navbar fixed-bottom" role="alert">
         <div class="container">
@@ -12,17 +10,8 @@
                 Este sitio utiliza un cookies para una mejor experiencia de usuario.
             </p>
             <div class="navbar-right">
-                @*<a asp-controller="Home" asp-action="Privacy" class="btn btn-info navbar-btn">Leer más</a>*@
-                <button type="button" class="btn btn-outline-info navbar-btn" data-cookie-string="@cookieString">Aceptar</button>
+                <button id="cookieConsentbutton" type="button" class="btn btn-outline-info navbar-btn" data-cookie-string="@cookieString" onclick="aceptCookieConditions()">Aceptar</button>
             </div>
         </div>
     </nav>
-    <script>
-        (function () {
-            document.querySelector("#cookieConsent button[data-cookie-string]").addEventListener("click", function (el) {
-                document.cookie = el.target.dataset.cookieString;
-                document.querySelector("#cookieConsent").classList.add("hidden");
-            }, false);
-        })();
-    </script>
 }

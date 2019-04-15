@@ -1,36 +1,42 @@
-﻿@using Microsoft.AspNet.Identity
-@using PN.Controllers.Helpers
+﻿@{ 
+    var service = new LanguagesService();
+    var currentUrl = Request.Url.PathAndQuery;
+}
 
 <div class="nav-item dropdown float-right">
 
     @if (Request.IsAuthenticated)
     {
+        var userName = User.Identity.GetUserName();
+        var userImagePath = User.Identity.GetUserImagePath();
+
         using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
         {
             @Html.AntiForgeryToken()
 
             <a id="btnUser" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @User.Identity.GetUserName()
-                <img class="icon" src='@Url.Content(User.Identity.GetUserImagePath())' width="30" height="30" />
+                <img class="icon" src='@Url.Content(userImagePath)' width="30" height="30" />
+                <span>@userName</span>
             </a>
             <div class="dropdown-menu" aria-labelledby="btnUser">
-                <a class="dropdown-item" href="Manage/Index/@User.Identity.GetUserName()" title="Manage">My Account</a>
+                <a class="dropdown-item" href="~/@service.Language/@service.UserTitle">@service.UserTitle</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="~/@service.Language/@service.AccountTitle/@userName" title="Manage">@userName</a>
                 <a class="dropdown-item" href="#" onclick="notYect()">Mis Foros</a>
-                <a class="dropdown-item" href="#" onclick="notYect()">Mis Subscriciones</a>
-                <a class="dropdown-item" href="#" onclick="notYect()">Users</a>
-                <a Class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+                <a class="dropdown-item" href="#" onclick="notYect()">Mis Suscripciones</a>
+                <a Class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">Cerrar Sesión</a>
             </div>
     }
     }
     else
     {
         <a id="btnUser" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            User
             <img class="icon" src='@Url.Content("~/Content/images/No-User.svg")' width="30" height="30" />
+                <span>Usuario</span>
         </a>
     <div class="dropdown-menu" aria-labelledby="btnUser">
-        <a id="loginLink" class="dropdown-item" href="/Account/Register">Register</a>
-        <a id="loginLink" class="dropdown-item" href="/Account/Login">Log in</a>
+        <a id="loginLink" class="dropdown-item" href="~/@service.Language/@service.UserTitle/Register?returnUrl=@currentUrl">Register</a>
+        <a id="loginLink" class="dropdown-item" href="~/@service.Language/@service.UserTitle/Login?returnUrl=@currentUrl">Log in</a>
     </div>
     }
 </div>

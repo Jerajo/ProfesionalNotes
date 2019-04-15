@@ -1,24 +1,27 @@
 ﻿@* Barra de Navegacón *@
 
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="navbar nav-fill justify-content-between">
-        <a href="/" class="navbar-brand">
-            <img src='@Url.Content("~/Content/images/logo.svg")' width="30" height="30" class="d-inline-block align-top" alt="" />
-            Profesional Notes
-        </a>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Tema: Buscar" aria-label="Tema: Buscar" id="searchBar">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
-        </form>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
+@{ 
+    var service = new LanguagesService();
+}
+
+<nav class="navbar sticky-top navbar-expand-md">@*fixed-top*@
+    <a href="~/@service.Language/@service.HomeTitle" class="navbar-brand">
+        <img src='@Url.Content("~/Content/images/logo.svg")' width="30" height="30" class="d-inline-block align-top" alt="" />
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="navbar-collapse collapse" id="navbarNavAltMarkup">
+        <form class="form-inline my-5 my-lg-0 main-search" role="form">
+            <div class="input-group main-search">
+                <input type="text" class="form-control" />
+                <button type="submit" class="btn btn-outline-success my-sm-0">Search</button>
+            </div><!-- /input-group -->
+        </form>
         <div class="nav navbar-nav">
-            <a class="nav-item nav-link dropdown-toggle" href="#" id="btnPosition" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Posición
+            <a id="btnPosition" class="nav-item dropdown nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <img class="icon" src='@Url.Content("~/Content/images/Dark-Drag.svg")' width="25" height="25" />
+                <span>Posición</span>
             </a>
             <div class="dropdown-menu" aria-labelledby="btnPosition">
                 <label class="dropdown-item" onclick="notYect()">Action</label>
@@ -26,9 +29,9 @@
                 <div class="dropdown-divider"></div>
                 <label class="dropdown-item" onclick="notYect()">Something else here</label>
             </div>
-            <a id="btnTopic" class="nav-item nav-link" href="#" onclick="toggleStyleSheet()">
-                Tema
+            <a id="btnTheme" class="nav-item nav-link" href="#" onclick="toggleStyleSheet()">
                 <img class="icon" src='@Url.Content("~/Content/images/Dark-Theme.svg")' width="25" height="25" />
+                <span>Tema</span>
             </a>
             @Html.Partial("_LoginPartial")
         </div>
