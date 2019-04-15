@@ -95,6 +95,12 @@ namespace PN.Controllers.Helpers
             return userService.IsUserInRole(role);
         }
 
+        public static int GetUserInformationId(this IIdentity identity)
+        {
+            var userService = new UserService();
+            return userService.GetUserInformation().Id;
+        }
+
         #endregion
 
         #region MyRegion
