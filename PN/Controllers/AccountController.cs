@@ -6,8 +6,8 @@ using System.Web.Mvc;
 using System.Threading.Tasks;
 using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using System.Collections.Generic;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace PN.Controllers
 {
@@ -158,7 +158,7 @@ namespace PN.Controllers
         //
         // GET: /Account/Register
         [AllowAnonymous]
-        public ActionResult Register()
+        public ActionResult Register(string returnUrl)
         {
             var model = new RegisterViewModel
             {
@@ -182,6 +182,7 @@ namespace PN.Controllers
                 }
             };
 
+            ViewBag.ReturnUrl = returnUrl;
             return View(model);
         }
 
@@ -190,7 +191,7 @@ namespace PN.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        public async Task<ActionResult> Register(RegisterViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -403,7 +404,7 @@ namespace PN.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
         {
-            if (User.Identity.IsAuthenticated)
+            if (Request.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Manage");
             }
