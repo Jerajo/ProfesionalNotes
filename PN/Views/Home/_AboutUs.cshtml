@@ -1,4 +1,8 @@
-﻿<div id="aboutUs" class="container">
+﻿@{ 
+    var service = new LanguagesService();
+}
+
+<div id="aboutUs" class="container">
     <h1 class="title">BIENVENIDO A <br />NOTAS PROFECIONALES</h1>
     <hr class="title"/>
     @*<div class="separator"></div>*@
@@ -11,5 +15,9 @@
         ¿Qué esperas? Vamos!, aprende algo nuevo, participa,
         gana experiencia.
     </p>
-    <p>@Languages.Resourse.String1</p>
+    @* Prueba multi lenguaje *@
+    <div id="about-buttons">
+        <a href="#" class="btn btn-info">Ir al top</a> | 
+        <a href="~/@service.Language/@service.PoliciesTitle/" class="btn btn-info">Terminos y condiciones</a>
+    </div>
 </div>

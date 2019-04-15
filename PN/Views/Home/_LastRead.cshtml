@@ -1,9 +1,10 @@
-﻿<div id="lastRead" class="container">
+﻿@using Westwind.Web.Markdown
+@model PN.Models.Post
+
+<div id="lastRead" class="container">
     <h3>Última lectura</h3>
     <p id="resume" class="blockquote">
-        BIenvenido a la comunidad de Notas Profesionales.
-        Aquí encontraras, documentaciones actualizadas,
-        tips profecionales, comentarios, y mucho más.
+        @Markdown.ParseHtmlString(Model.Body)
     </p>
-    <button type="button" class="btn btn-info navbar-btn pull-right">Seguir Leyendo</button>
+    <a href="Articulos/Details/" class="btn btn-info navbar-btn pull-right">Seguir Leyendo</a>
 </div>

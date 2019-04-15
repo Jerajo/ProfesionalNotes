@@ -1,16 +1,21 @@
-﻿@model IEnumerable<PN.Models.Forum>
+﻿@model PN.Models.HomeViewModel
 @{
     ViewBag.Title = "Inicio";
 }
 
 <div class="container">
     @{
-        Html.RenderPartial("_LastRead");
-        Html.RenderPartial("_Forums", Model);
+        if (Request.IsAuthenticated && Model.LastPostRead != null)
+        {
+            Html.RenderPartial("_LastRead", Model.LastPostRead);
+        }
+        Html.RenderPartial("_Forums", Model.Forums);
         Html.RenderPartial("_AboutUs");
     }
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+            console.log("Solo me ejecuto en la página de inicio.");
+    </script>
 }
