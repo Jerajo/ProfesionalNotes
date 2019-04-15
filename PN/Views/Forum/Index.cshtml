@@ -1,38 +1,51 @@
-﻿@using PN.Controllers.Helpers
-@model IEnumerable<PN.Models.Forum>
+﻿@model IEnumerable<PN.Models.Forum>
 @{
-    ViewBag.Title = "Foros";
+    var service = new LanguagesService();
+    var isAdmin = User.Identity.IsUserInRole("Admin");
+    var isAutenticated = Request.IsAuthenticated;
+    var userId = User.Identity.GetUserInformationId();
+    ViewBag.Title = service.ForumTitle;
 }
 
-<h1 class="title">Foros</h1>
+<h1 class="title">FOROS</h1>
 <hr class="title" />
 @*<div class="separator"></div>*@
 
 @foreach (var forum in Model)
 {
+    var isSubcribed = false;
+    if (isAutenticated && forum.UserForumSubscription.Count > 0)
+    {
+        isSubcribed = forum.UserForumSubscription.Any(m => m.UserId == userId);
+    }
+    var btnClass = (isSubcribed) ? "btn-default" : "btn-info";
     <div class="box-button topic">
-        <a href="/Tag/Index/@forum.Id">
-            <img class="img-responsive img-fill" src="@Url.Content(forum.ImagePath)" alt="Imagen Tema" />
+        <a href="~/@service.Language/@service.TagTitle/@forum.Name">
+            <img class="img-fluid" src="@Url.Content(forum.ImagePath)" alt="Imagen Tema" />
+            <h3 class="text-center box-title">@forum.Name</h3>
         </a>
-        <h3>@forum.Name</h3>
-        @if (User.Identity.IsUserInRole("Admin"))
+        <div class="btn-block btn-group-vertical" role="group">
+            <a href="~/@service.Language/@service.ForumTitle/@forum.Name/Details" class="btn btn-info navbar-btn">Detalles</a>
+            <a href="~/@service.Language/@service.ForumTitle/@forum.Name/Subscribe" class="btn @btnClass navbar-btn" onclick="Subcription(this)">Unirse</a>
+        </div>
+        <br />
+        @if (isAdmin)
         {
-            @Html.ActionLink("Edit", "Edit", new { id = forum.Id }, new { @class = "btn btn-info navbar-btn" })
-            @Html.ActionLink("Details", "Details", new { id = forum.Id }, new { @class = "btn btn-info navbar-btn" })
-            @Html.ActionLink("Delete", "Delete", new { id = forum.Id }, new { @class = "btn btn-info navbar-btn" })
+            <div class="btn-group d-flex" role="group">
+                <a href="~/@service.Language/@service.ForumTitle/@forum.Name/Edit" class="btn btn-info navbar-btn">Editar</a>
+                <a href="~/@service.Language/@service.ForumTitle/@forum.Name/Delete" class="btn btn-info navbar-btn">Eliminar</a>
+            </div>
         }
-        @Html.ActionLink("Subcribirse", "Subscribe", new { id = forum.Id }, new { @class = "btn btn-info navbar-btn" })
     </div>
 }
 
-@if (User.Identity.IsUserInRole("Admin"))
+@if (isAdmin)
 {
     <div class="box-button topic">
-        <img class="img-responsive img-fill" alt="Imagen Tema" />
-        <a href="/Forum/Create" class="btn btn-info navbar-btn">
-            <h3>Crear un Tag</h3>
+        <img class="img-fluid" src="~/Content/images/logo.svg" alt="Imagen Tema" />
+        <a href="~/@service.Language/@service.ForumTitle/New/Create" class="btn btn-info btn-block">
+            <h3>Crear un Foro</h3>
         </a>
     </div>
 }
 <div class="clearfix"></div>
-

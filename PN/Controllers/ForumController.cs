@@ -1,7 +1,6 @@
 ﻿using System;
 using PN.Models;
 using System.IO;
-using System.Net;
 using PN.Services;
 using System.Linq;
 using System.Web.Mvc;
@@ -10,10 +9,8 @@ using System.Data.Entity;
 namespace PN.Controllers
 {
     [Authorize]
-    public class ForumController : Controller
+    public class ForumController : BaseController
     {
-        private AppDbContext db = new AppDbContext();
-
         // GET: Forum
         [AllowAnonymous]
         public ActionResult Index()
@@ -22,51 +19,68 @@ namespace PN.Controllers
         }
 
         // GET: Forum/Subscribe/5
-        public ActionResult Subscribe(int? id)
+        public ActionResult Subscribe(string forumName)
         {
-            if (id == null) return HttpNotFound();
+            if (!db.Forum.Any(m => m.Name == forumName)) return PageNotFound();
 
-            var userService = new UserService();
-            var userInfo = userService.GetUserInformation();
-
-            if (!db.UserForumSubscription.Any(o => o.UserId == userInfo.Id && o.ForumId == id.Value))
+            using (var userService = new UserService())
             {
-                var subscription = new UserForumSubscription
+                var userInfo = userService.GetUserInformation();
+                var forum = db.Forum.First(m => m.Name == forumName);
+                var userForumSubcription = db.UserForumSubscription.Where(m => m.UserId == userInfo.Id && m.ForumId == forum.Id).FirstOrDefault();
+
+                if (userForumSubcription == null)
                 {
-                    UserId = userInfo.Id,
-                    ForumId = id.Value,
-                    Score = 0
-                };
+                    userForumSubcription = new UserForumSubscription
+                    {
+                        UserId = userInfo.Id,
+                        ForumId = forum.Id,
+                        Score = 0
+                    };
 
-                db.UserForumSubscription.Add(subscription);
+                    forum.UserForumSubscription.Add(userForumSubcription);
+                }
+                else forum.UserForumSubscription.Remove(userForumSubcription);
+
+                db.Entry(forum).State = EntityState.Modified;
                 db.SaveChanges();
-
-                return RedirectToAction("Index", new { id = id.Value });
             }
-            return HttpNotFound();
+
+            var service = new LanguagesService();
+            var preious = Request.UrlReferrer.PathAndQuery;
+            var next = $"~/{service.Language}/{service.ForumTitle}";
+            if (preious == null) return RedirectToLocal(next);
+
+            var redirectUrl = (preious.Contains(service.ForumTitle)) ? next : preious;
+
+            return RedirectToLocal(redirectUrl);
         }
 
         // GET: Forum/Details/5
         [AllowAnonymous]
-        public ActionResult Details(int? id)
+        public ActionResult Details(string forumName)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(forumName)) return PageNotFound();
+
+            var forum = db.Forum.First(m => m.Name == forumName);
+            if (forum == null) return HttpNotFound();
+
+            var model = new DetailsForumViewModel
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Forum forum = db.Forum.Find(id);
-            if (forum == null)
-            {
-                return HttpNotFound();
-            }
-            return View(forum);
+                Id = forum.Id,
+                Name = forum.Name,
+                Desciption = forum.Desciption,
+                ImagePath = forum.ImagePath
+            };
+
+            return View(model);
         }
 
         // GET: Forum/Create
         [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
-            var model = new CreateForumViewModel();
+            var model = new CreateForumViewModel() { ImagePath = "~/Content/images/No-image.svg" };
 
             return View(model);
         }
@@ -114,11 +128,11 @@ namespace PN.Controllers
 
         // GET: Forum/Edit/5
         [Authorize(Roles = "Admin")]
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(string forumName)
         {
-            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (forumName == null) return PageNotFound();
 
-            var forum = db.Forum.Find(id);
+            var forum = db.Forum.First(m => m.Name == forumName);
             if (forum == null) return HttpNotFound();
 
             var model = new CreateForumViewModel
@@ -176,17 +190,13 @@ namespace PN.Controllers
 
         // GET: Forum/Delete/5
         [Authorize(Roles = "Admin")]
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(string forumName)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Forum forum = db.Forum.Find(id);
-            if (forum == null)
-            {
-                return HttpNotFound();
-            }
+            if (forumName == null) return PageNotFound();
+
+            var forum = db.Forum.First(m => m.Name == forumName);
+            if (forum == null) return HttpNotFound();
+
             return View(forum);
         }
 
@@ -200,15 +210,6 @@ namespace PN.Controllers
             db.Forum.Remove(forum);
             db.SaveChanges();
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

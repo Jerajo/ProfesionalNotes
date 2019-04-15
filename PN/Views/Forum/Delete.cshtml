@@ -1,10 +1,12 @@
 ﻿@model PN.Models.Forum
-
 @{
-    ViewBag.Title = "Delete";
+    var service = new LanguagesService();
+    ViewBag.Title = "Eliminar"; // TODO: Multilanguage
 }
 
-<h2>Delete</h2>
+<h1 class="title">eliminar</h1> @*TODO: Multilanguage*@
+<hr class="title" />
+@*<div class="separator"></div>*@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
@@ -37,12 +39,13 @@
 
     </dl>
 
-    @using (Html.BeginForm()) {
+    @using (Html.BeginForm())
+    {
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+            <input type="submit" value="Delete" class="btn btn-outline-danger" />
+            <a href="~/@service.Language/@service.ForumTitle">Ir a la lista de foros</a>
         </div>
     }
 </div>

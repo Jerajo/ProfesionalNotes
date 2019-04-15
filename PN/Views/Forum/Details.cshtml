@@ -1,42 +1,42 @@
-﻿@model PN.Models.Forum
-
+﻿@model PN.Models.DetailsForumViewModel
 @{
-    ViewBag.Title = "Details";
+    var service = new LanguagesService();
+    ViewBag.Title = "Details"; // TODO: Multilanguage
 }
 
-<h2>Details</h2>
+<h1 class="title">detalles</h1> @*TODO: Multilanguage*@
+<hr class="title" />
+@*<div class="separator"></div>*@
 
 <div>
-    <h4>Forum</h4>
+    <h4>Forum</h4> @*TODO: Multilanguage*@
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Desciption)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Desciption)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ImagePath)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ImagePath)
-        </dd>
-
-    </dl>
+    <table>
+        <tr>
+            <td class="container-fluid">
+                <div class="dl-horizontal">
+                    @Html.DisplayNameFor(model => model.Name)
+                    <p>@Html.DisplayFor(model => model.Name)</p>
+                    @Html.DisplayNameFor(model => model.Desciption)
+                    <p>@Html.DisplayFor(model => model.Desciption)</p>
+                </div>
+            </td>
+            <td>
+                <div class="dl-horizontal">
+                    @Html.DisplayNameFor(model => model.ImagePath)
+                    <img id="img-to-upload" class="d-block img-fluid img-input" src="@Url.Content(Model.ImagePath)" />
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+<div class="w-100"> @*TODO: Multilanguage*@
+    <div class="btn-group">
+        <a class="btn btn-info" href="~/@service.Language/@service.ForumTitle/@Model.Name/Edit">Editar</a>
+        @if (User.Identity.IsUserInRole("Admin"))
+        {
+            <a class="btn btn-outline-danger" href="~/@service.Language/@service.ForumTitle/@Model.Name/Delete">Eliminar</a>
+        }
+    </div>
+    <a class="float-right" href="~/@service.Language/@service.ForumTitle">Ir a la lista de foros</a>
+</div>

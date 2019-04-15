@@ -1,60 +1,55 @@
 ﻿@model PN.Models.CreateForumViewModel
-
 @{
-    ViewBag.Title = "Create";
+    var service = new LanguagesService();
+    ViewBag.Title = "Crear"; // TODO: Multilanguage
 }
 
-<h2>Create</h2>
+<h1 class="title">crear</h1> @*TODO: Multilanguage*@
+<hr class="title" />
+@*<div class="separator"></div>*@
 
 @using (Html.BeginForm("Create", "Forum", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Forum</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Desciption, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Desciption, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Desciption, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    <h4>Foro</h4> @*TODO: Multilanguage*@
+    <hr />
+    <table>
+        <tr valign="top">
+            <td class="container-fluid">
+                <div class="dl-horizontal">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Desciption, htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.EditorFor(model => model.Desciption, new { htmlAttributes = new { @class = "form-control description" } })
+                        @Html.ValidationMessageFor(model => model.Desciption, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </td>
+            <td valign="top">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ImagePath, htmlAttributes: new { @class = "control-label" })
+                    <img id="img-to-upload" class="d-block img-fluid img-input" src="@Url.Content(Model.ImagePath)" />
+                    <label class="btn btn-block btn-success" for="image-file">
+                        <span id="btn-file">Subir Archivo</span>
+                    </label>
+                    <input id="image-file" type="file" class="from-control" name="ImageFile" />
+                </div>
+            </td>
+        </tr>
+    </table>
 
-        @if (!string.IsNullOrEmpty(Model.ImagePath))
-        {
-            <img class="img-responsive img-fill" src="@Url.Content(Model.ImagePath)" alt="No Image" />
-        }
-        else
-        {
-            <img class="img-responsive img-fill" src="~/Content/images/No-Image.svg" alt="No Image" />
-        }
-        <div class="form-group">
-            @Html.LabelFor(model => model.ImagePath, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <input type="file" class="from-control" name="ImageFile" />
-                @Html.EditorFor(model => model.ImagePath, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ImagePath, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-default" />
+        <a class="float-right" href="~/@service.Language/@service.ForumTitle">Ir a la lista de foros</a>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
