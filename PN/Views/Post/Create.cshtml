@@ -1,4 +1,5 @@
-﻿@model PN.Models.CreatePostViewModel
+﻿@using Westwind.Web.Markdown
+@model PN.Models.CreatePostViewModel
 
 @{
     ViewBag.Title = "Create";
@@ -36,6 +37,13 @@
     </div>
 
     <div class="form-group">
+        <label class="control-label col-md-2">Vista Previa</label>
+        <div class="col-md-10">
+            @Markdown.ParseHtmlString(Model.Body)
+        </div>
+    </div>
+
+    <div class="form-group">
         @Html.LabelFor(m => m.SelectedTadId, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
             @Html.DropDownListFor(m => m.SelectedTadId, new SelectList(Model.Tags, "Id", "Name", 0), new { @class = "form-control", id = "downList" })
@@ -45,7 +53,7 @@
     <div class="form-group">
         @Html.LabelFor(m => m.SelectedPlace, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.DropDownListFor(m => m.SelectedPlace, new SelectList(Places, "Value", "Text", 0), new { @class = "form-control", id = "downList" })
+            @Html.DropDownListFor(m => m.SelectedPlace, new SelectList(Places, "Value", "Text", Places.Count - 1), new { @class = "form-control", id = "downList" })
         </div>
     </div>
 
