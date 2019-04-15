@@ -8,14 +8,16 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace PN.Services
 {
-    public class UserService
+    public class UserService : IDisposable
     {
+
         public UserService()
         {
             this.db = new ApplicationDbContext();
             this.UserId = HttpContext.Current.User.Identity.GetUserId();
             this.RoleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
             this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+            this.Disposing = false;
         }
 
         #region SETTERS AND GETTERS
@@ -28,6 +30,8 @@ namespace PN.Services
 
         public UserManager<ApplicationUser> UserManager { get; private set; }
 
+        public bool Disposing { get; private set; }
+        
         #endregion
 
         public UserInformation GetUserInformation()
@@ -99,6 +103,20 @@ namespace PN.Services
                 return this.UserManager.IsInRole(id, name);
             }
             catch (Exception) { return false; }
+        }
+
+        public void Dispose(bool disposing)
+        {
+            Disposing = disposing;
+            if (Disposing) Dispose();
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
+            UserId = null;
+            RoleManager.Dispose();
+            UserManager.Dispose();
         }
     }
 
