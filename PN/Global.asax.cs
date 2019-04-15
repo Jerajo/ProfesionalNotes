@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PN.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -12,6 +13,7 @@ namespace PN
     {
         protected void Application_Start()
         {
+            LanguagesService.RegisterLanguages();
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
