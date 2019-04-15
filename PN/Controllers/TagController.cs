@@ -11,42 +11,71 @@ using System.Collections.Generic;
 namespace PN.Controllers
 {
     [Authorize]
-    public class TagController : Controller
+    public class TagController : BaseController
     {
-        private AppDbContext db = new AppDbContext();
-
         // GET: Tag/Index/5
-        public ActionResult Index(int? id)
+        public ActionResult Index(string forumName, string tagName)
         {
             List<Tag> model;
-            if (id == null) model = db.Tag.Take(20).ToList();
-            else model = db.Forum.Find(id.Value).Tag;
+            if (forumName == null) model = db.Tag.Take(20).ToList();
+            else model = db.Forum.First(m => m.Name == forumName).Tag;
+
+            ViewBag.forumName = forumName;
+
             return View(model);
         }
 
         // GET: Tag/Subscribe/5
-        public ActionResult Subscribe(int? id)
+        public ActionResult Subscribe(string forumName, string tagName)
         {
-            if (id == null) return HttpNotFound();
+            if (!db.Forum.Any(m => m.Name == forumName) || !db.Tag.Any(m => m.Name == tagName))
+                return PageNotFound();
 
-            return RedirectToAction("Index", new { id = id.Value });
+            if (tagName == null) return PageNotFound();
+            var service = new LanguagesService();
+            var preious = Request.UrlReferrer.PathAndQuery;
+            var next = $"~/{service.Language}/{service.TagTitle}/{forumName}";
+            if (preious == null) return RedirectToLocal(next);
+
+            var redirectUrl = (preious.Contains(service.TagTitle)) ? next : preious;
+
+            return RedirectToLocal(redirectUrl);
         }
 
         // GET: Tag/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(string forumName, string tagName)
         {
-            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (!db.Forum.Any(m => m.Name == forumName) || !db.Tag.Any(m => m.Name == tagName))
+                return PageNotFound();
 
-            var tag = db.Tag.Find(id);
-            if (tag == null) return HttpNotFound();
+            var tag = db.Tag.First(m => m.Name == tagName);
+            var model = new DetailsTagViewModel
+            {
+                Id = tag.Id,
+                Name = tag.Name,
+                Desciption = tag.Desciption,
+                ImagePath = tag.ImagePath,
+                Forums = tag.Forum
+            };
 
-            return View(tag);
+            ViewBag.forumName = forumName;
+
+            return View(model);
         }
 
         // GET: Tag/Create
-        public ActionResult Create()
+        public ActionResult Create(string forumName, string tagName)
         {
-            var model = new CreateTagViewModel { Forums = db.Forum.ToList() };
+            if (!db.Forum.Any(m => m.Name == forumName)) return PageNotFound();
+
+            var model = new CreateTagViewModel
+            {
+                Forums = db.Forum.ToList(),
+                ImagePath = "~/Content/images/No-image.svg",
+                SelectedForumId = db.Forum.First(m => m.Name == forumName).Id
+            };
+
+            ViewBag.forumName = forumName;
 
             return View(model);
         }
@@ -90,20 +119,23 @@ namespace PN.Controllers
                 db.Tag.Add(tag);
                 db.SaveChanges();
 
-                return RedirectToAction("Index");
+                var service = new LanguagesService();
+                return RedirectToLocal($"~/{service.Language}/{service.TagTitle}/{forum.Name}");
             }
 
             return View(model);
         }
 
         // GET: Tag/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(string forumName, string tagName)
         {
-            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (tagName == null) return PageNotFound();
 
-            
-            var tag = db.Tag.Find(id);
-            if (tag == null) return HttpNotFound();
+            var tag = db.Tag.First(m => m.Name == tagName);
+            if (tag == null) return PageNotFound();
+
+            ViewBag.forumName = forumName;
+            ViewBag.tagName = tagName;
 
             var model = new CreateTagViewModel
             {
@@ -160,19 +192,21 @@ namespace PN.Controllers
                     var r = db.Database.SqlQuery(typeof(int), $"INSERT INTO ForumTag VALUES({model.SelectedForumId}, {tag.Id})");
                 }
 
-                return RedirectToAction("Index");
+                var service = new LanguagesService();
+                var forum = db.Forum.Find(model.SelectedForumId);
+                return RedirectToLocal($"~/{service.Language}/{service.TagTitle}/{forum.Name}");
             }
 
             return View(model);
         }
 
         // GET: Tag/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(string tagName)
         {
-            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (tagName == null) return PageNotFound();
 
-            var tag = db.Tag.Find(id);
-            if (tag == null) return HttpNotFound();
+            var tag = db.Tag.First(m => m.Name == tagName);
+            if (tag == null) return PageNotFound();
 
             return View(tag);
         }
@@ -186,12 +220,6 @@ namespace PN.Controllers
             db.Tag.Remove(tag);
             db.SaveChanges();
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }
