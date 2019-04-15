@@ -1,29 +1,38 @@
-﻿body {
+﻿/* -------------------------------- Cuerpo -------------------------------- */
+body {
   
 }
 
+/* -------------------------------- Contenido -------------------------------- */
 /* Set padding to keep content from hitting the edges */
 .container.body-content {
-  padding-top: 100px;
-  padding-bottom: 20px;
+  padding-top: 0px;
   padding-left: 15px;
   padding-right: 15px;
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
+#page-container {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+#content-main {
+  flex: 1;
+}
+
+/* -------------------------------- Menú Lateral -------------------------------- */
+#laterl-menue {
+
+}
+
+/* -------------------------------- Píe -------------------------------- */
+#footer {
 }
 
 /* -------------------------------- Barra de Navegación -------------------------------- */
 .navbar-header > a,
 .navbar-header > .busqueda {
-  /*position: relative;
-  display: block;
-  float: left;
-  padding: 10px 15px;*/
   opacity: 0.8;
 }
 
@@ -33,9 +42,6 @@
 }
 
 .nav > li {
-  /*position: relative;
-  display: block;
-  padding: 10px 15px;*/
   opacity: 0.8;
 }
 
@@ -47,7 +53,14 @@
 }
 
 /* -------------------------------- Barra de Busqueda -------------------------------- */
+.main-search {
+  flex-grow: 100;
+}
 
+.main-search > button {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
 
 /* -------------------------------- Botones y Mouse -------------------------------- */
 .imagebutton:hover,
@@ -63,6 +76,9 @@ label {
 /* Páginas o secciones (div) que ocupán todo el alto de la ventana divididos en #regiones
    que se navegan con la rueda del ratón.
 */
+.sector {
+
+}
 
 /* -------------------------------- TÍTULOS -------------------------------- */
 h1.title {
@@ -83,8 +99,9 @@ div.separator {
   margin-bottom: 20px;
 }
 
-/* -------------------------------- TEMAS -------------------------------- */
+/* -------------------------------- Cajas Botones -------------------------------- */
 .box-button.topic {
+  position: relative;
   display: block;
   float: left;
   border: solid 1px;
@@ -93,8 +110,37 @@ div.separator {
   width: 23%;
 }
 
+.box-title {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  background-color: rgba(0,0,0,0.3);
+  fill-opacity: 0.5;
+  padding: 5px 0;
+}
+
 .topic > h3 {
   margin: 10px 0px;
   text-align: center;
 }
 
+/* -------------------------------- INPUTS ----------------------------------- */
+.description {
+  min-height: 150px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+  white-space: normal;
+}
+
+.img-input {
+  min-height: 200px;
+  min-width: 200px;
+}
+
+.form-group input[type=file] {
+  display: none;
+}
