@@ -23,29 +23,30 @@ namespace PN.Models
 
         [Required]
         [Display(Name = "Select a place")]
-        public int SelectedPlace { get; set; }
+        public string SelectedPlace { get; set; }
         public int PlacesCount { get; set; }
     }
 
-    public class PostTagViewModel
+    public class HomePostTagViewModel
     {
-        public int PostId { get; set; }
+        public int Id { get; set; }
 
-        [Required]
-        [StringLength(100)]
         public string Title { get; set; }
 
-        [Required]
         public string Body { get; set; }
 
-        [Required]
-        [Display(Name = "Select a tag")]
-        public int SelectedTadId { get; set; }
-        public List<Tag> Tags { get; set; }
+        public DateTime Posted { get; set; }
 
-        [Required]
-        [Display(Name = "Select a place")]
-        public int SelectedPlace { get; set; }
-        public int PlacesCount { get; set; }
+        public Tag Tag { get; set; }
+
+        public List<string> TagNames { get; set; }
+
+        public List<PostLink> PostLinks { get; set; }
+    }
+
+    public class PostLink
+    {
+        public string Place { get; set; }
+        public string Title { get; set; }
     }
 }

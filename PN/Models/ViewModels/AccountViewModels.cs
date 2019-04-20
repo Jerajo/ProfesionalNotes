@@ -1,9 +1,8 @@
-﻿using FluentValidation;
-using PN.Services;
+﻿using PN.Services;
+using System.Web.Mvc;
+using FluentValidation;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Web.Mvc;
 using CompareAttribute = System.ComponentModel.DataAnnotations.CompareAttribute;
 
 namespace PN.Models
@@ -23,7 +22,7 @@ namespace PN.Models
     public class SendCodeViewModel
     {
         public string SelectedProvider { get; set; }
-        public List<System.Web.Mvc.SelectListItem> Providers { get; set; }
+        public List<SelectListItem> Providers { get; set; }
         public string ReturnUrl { get; set; }
         public bool RememberMe { get; set; }
     }

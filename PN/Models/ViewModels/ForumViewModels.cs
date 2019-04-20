@@ -15,7 +15,6 @@ namespace PN.Models
         public string Name { get; set; }
 
         [Required]
-        [StringLength(500)]
         [DataType(DataType.MultilineText)]
         public string Desciption { get; set; }
 
@@ -23,6 +22,7 @@ namespace PN.Models
         public string ImagePath { get; set; }
 
         public HttpPostedFileBase ImageFile { get; set; }
+        public UserInformation UserInformation { get; internal set; }
     }
 
     public class DetailsForumViewModel

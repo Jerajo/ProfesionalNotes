@@ -34,7 +34,7 @@ namespace PN.Models.ViewModels
 
         public Country Country { get; set;  }
 
-        public List<UserForumSubscription> UserForumSubscription { get; set; }
+        public List<ForumUser> ForumUser { get; set; }
 
         public List<Edition> Edition { get; set; }
 
