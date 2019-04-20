@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using PN.Models;
 using System.Web;
 using System.Threading.Tasks;
@@ -10,19 +11,16 @@ namespace PN.Services
 {
     public class UserService : IDisposable
     {
-
         public UserService()
         {
-            this.db = new ApplicationDbContext();
-            this.UserId = HttpContext.Current.User.Identity.GetUserId();
-            this.RoleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
-            this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
-            this.Disposing = false;
+            InizialiseComponents();
         }
 
         #region SETTERS AND GETTERS
 
         public string UserId { get; private set; }
+
+        public UserInformation UserInformation { get; private set; }
 
         public ApplicationDbContext db { get; private set; }
 
@@ -31,8 +29,10 @@ namespace PN.Services
         public UserManager<ApplicationUser> UserManager { get; private set; }
 
         public bool Disposing { get; private set; }
-        
+
         #endregion
+
+        #region Public Methods
 
         public UserInformation GetUserInformation()
         {
@@ -105,6 +105,20 @@ namespace PN.Services
             catch (Exception) { return false; }
         }
 
+        #endregion
+
+        #region Auxiliary Methods
+
+        private void InizialiseComponents()
+        {
+            this.db = new ApplicationDbContext();
+            this.UserId = HttpContext.Current.User.Identity.GetUserId();
+            this.UserInformation = GetUserInformation();
+            this.RoleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
+            this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+            this.Disposing = false;
+        }
+
         public void Dispose(bool disposing)
         {
             Disposing = disposing;
@@ -113,11 +127,26 @@ namespace PN.Services
 
         public void Dispose()
         {
-            db.Dispose();
             UserId = null;
-            RoleManager.Dispose();
-            UserManager.Dispose();
+            UserInformation = null;
+            if (db != null)
+            {
+                db.Dispose();
+                db = null;
+            }
+            if (RoleManager != null)
+            {
+                RoleManager.Dispose();
+                RoleManager = null;
+            }
+            if (UserManager != null)
+            {
+                UserManager.Dispose();
+                UserManager = null;
+            }
         }
+
+        #endregion
     }
 
     /* Implementacion de clase

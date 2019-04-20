@@ -1,9 +1,14 @@
 ﻿using System;
+using PN.Models;
 using System.IO;
 using System.Web;
+using IP2Country;
 using System.Threading;
-using System.Collections.Generic;
+using IP2Country.IpToAsn;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
+using IP2Country.Datasources;
+using System.Collections.Generic;
 
 namespace PN.Services
 {
@@ -15,6 +20,8 @@ namespace PN.Services
         }
 
         #region SETTERS AND GETTERS
+
+        public string Region { get; private set; }
 
         public static List<string> Languages { get; private set; }
         public string Language { get; private set; }
@@ -58,6 +65,17 @@ namespace PN.Services
             catch (Exception) { throw; }
         }
 
+        public string GetCurrentRegion()
+        {
+            try
+            {
+                var currentCulture = Thread.CurrentThread.CurrentCulture;
+                var currentRegion = new RegionInfo(currentCulture.Name);
+                return currentRegion.TwoLetterISORegionName;
+            }
+            catch (Exception) { throw; }
+        }
+
         public static void RegisterLanguages()
         {
             try
@@ -76,6 +94,18 @@ namespace PN.Services
             catch (Exception) { throw; }
         }
 
+        public string GetUserHostRegion(string userHostAddress)
+        {
+            var resolver = new IP2CountryResolver(new IIP2CountryDataSource[] {
+                new IpToAsnCSVFileSource(GetFullPath("App_Data/ip2country-v4.tsv.gz")),
+                new IpToAsnCSVFileSource(GetFullPath("App_Data/ip2country-v6.tsv.gz")),
+            });
+
+            var resoult = resolver.Resolve(userHostAddress);
+
+            return resoult.Country;
+        }
+
         public void Dispose(bool isDisposing)
         {
             IsDisposing = isDisposing;
@@ -85,6 +115,7 @@ namespace PN.Services
         public void Dispose()
         {
             Language = null;
+            Region = null;
             HomeTitle = null;
             ForumTitle = null;
             PostTitle = null;
@@ -130,6 +161,7 @@ namespace PN.Services
         private void InitializeComponent()
         {
             Language = GetCurrentLanguage();
+            Region = GetCurrentRegion();
             HomeTitle = HomeTitles[Language];
             ForumTitle = ForumTitles[Language];
             PostTitle = PostTitles[Language];
@@ -138,6 +170,51 @@ namespace PN.Services
             AccountTitle = AccountTitles[Language];
             PoliciesTitle = PoliciesTitles[Language];
             IsDisposing = false;
+        }
+
+        private void InsertCultureInfoInDB()
+        {
+            using (var db = new AppDbContext())
+            {
+                var fileServer = new FileService();
+                var jObjet = fileServer.Read(GetFullPath("App_Data/cultures.json")) as JObject;
+                var languages = jObjet["languages"].ToObject<List<string>>();
+                var countries = jObjet["countries"].ToObject<List<string>>();
+                var laguageList = new List<Language>();
+                var countryList = new List<Country>();
+
+                foreach (var value in languages)
+                {
+
+                    var culture = new CultureInfo(value);
+
+                    var language = new Language
+                    {
+                        ISOLanguage = value,
+                        NativeLanguage = culture.NativeName,
+                    };
+                    laguageList.Add(language);
+                }
+
+                db.Language.AddRange(laguageList);
+                db.SaveChanges();
+
+                foreach (var value in countries)
+                {
+                    var regionInfo = new RegionInfo(value);
+
+                    var country = new Country
+                    {
+                        ISORegion = value,
+                        NativeRegion = regionInfo.NativeName
+                    };
+
+                    countryList.Add(country);
+                }
+
+                db.Country.AddRange(countryList);
+                db.SaveChanges();
+            }
         }
 
         #endregion
