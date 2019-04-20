@@ -3,7 +3,6 @@ using PN.Models;
 using System.Web;
 using PN.Services;
 using System.Web.Mvc;
-using System.Threading.Tasks;
 
 namespace PN.Controllers
 {
@@ -12,10 +11,12 @@ namespace PN.Controllers
         #region SETTERS AND GETTERS
 
         protected AppDbContext db { get; set; } = new AppDbContext();
-        public bool IsLoading { get; protected set; }
-        public bool FirstInit { get; protected set; }
+
+        protected LanguagesService Service { get; set; } = new LanguagesService();
 
         #endregion
+
+        #region Methods
 
         public ActionResult PageNotFound()
         {
@@ -27,38 +28,39 @@ namespace PN.Controllers
             return View("Policies");
         }
 
-        #region Auxiliary Methods
-
-        public async Task<bool> Loading()
+        protected override void Dispose(bool disposing)
         {
-            IsLoading = true;
-            using (var service = new LanguagesService())
+            if (disposing)
             {
-                FirstInit = await IsFirstInit(service);
+                if (db != null)
+                {
+                    db.Dispose();
+                    db = null;
+                }
+                if (Service != null)
+                {
+                    Service.Dispose();
+                    Service = null;
+                }
             }
-            return false;
+            base.Dispose(disposing);
         }
 
-        public Task<bool> IsFirstInit(LanguagesService service = default)
+        #endregion
+
+        #region Auxiliary Methods
+
+        public bool IsFirstInit(LanguagesService service = default)
         {
             try
             {
-                if (Request.Cookies["cookiesPN"] != null) return Task.FromResult(false);
+                if (CookieExits("Language")) return false;
                 else
                 {
-                    // Create Cookie
-                    var AppCookies = new HttpCookie("cookiesPN");
-
-                    // Add Values
-                    AppCookies["Language"] = service.Language;
-                    AppCookies["SelectedTheme"] = "Dark";
-
-                    // Add presistance for 50 Years
-                    AppCookies.Expires = DateTime.Now.AddYears(50);
-
-                    // Save Cookie
-                    Response.Cookies.Add(AppCookies);
-                    return Task.FromResult(true);
+                    SaveCookie("Language", Service.Language);
+                    SaveCookie("Country", Service.Region);
+                    SaveCookie("SelectedTheme", "Dark");
+                    return true;
                 }
             }
             catch (Exception ex) { throw new Exception($"Error al crear los cookies. \n{ex.Message}"); }
@@ -73,14 +75,50 @@ namespace PN.Controllers
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
+        protected string GetIPAddress()
         {
-            if (disposing)
+            var context = System.Web.HttpContext.Current;
+            string ipAddress = context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+
+            if (!string.IsNullOrEmpty(ipAddress))
             {
-                db.Dispose();
+                string[] addresses = ipAddress.Split(',');
+                if (addresses.Length != 0)
+                {
+                    return addresses[0];
+                }
             }
-            base.Dispose(disposing);
+
+            return context.Request.ServerVariables["REMOTE_ADDR"];
         }
+
+        protected void SaveCookie(string cookieName, object cookieValue, DateTime? expiration = null)
+        {
+            if (CookieExits(cookieName)) UpdateCookie(cookieName, cookieValue, expiration);
+            
+            // Create Cookie
+            var AppCookies = new HttpCookie(cookieName, cookieValue.ToString());
+
+            // Add presistance for 50 Years
+            var date = expiration ?? DateTime.Now.AddYears(50);
+            AppCookies.Expires = date;
+
+            // Save Cookie
+            Response.Cookies.Add(AppCookies);
+        }
+
+        protected void UpdateCookie(string cookieName, object cookieValue, DateTime? expiration = null)
+        {
+            var AppCookies = Request.Cookies[cookieName];
+            AppCookies.Value = cookieValue.ToString();
+
+            var date = expiration ?? DateTime.Now.AddYears(50);
+            AppCookies.Expires = date;
+
+            Response.Cookies.Add(AppCookies);
+        }
+
+        protected bool CookieExits(string cookieName) => (Request.Cookies[cookieName] != null);
 
         #endregion
     }

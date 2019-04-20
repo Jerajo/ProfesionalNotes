@@ -4,18 +4,34 @@ using System.Net;
 using System.Linq;
 using System.Web.Mvc;
 using System.Data.Entity;
-using System.Collections.Generic;
+using System.Linq.Dynamic;
 
 namespace PN.Controllers
 {
+    [Authorize]
     public class PostController : BaseController
     {
+        [Authorize(Roles = "admin")]
+        public ActionResult Posts()
+        {
+            var model = db.Post.Take(20).ToList();
+            return View();
+        }
+
         // GET: Post/Index/5
+        [AllowAnonymous]
         public ActionResult Index(string forumName, string tagName)
         {
-            List<Post> model;
-            if (tagName == null) model = db.Post.Take(20).ToList();
-            else model = db.Post.Where(m => m.TagPost.Any(o => o.Tag.Name == tagName)).Take(20).ToList();
+            if (!db.Tag.Any(m => m.Name == tagName)) PageNotFound();
+
+            //var posts = db.Post.Where(m => m.TagPost.Any(o => o.Tag.Name == tagName)).ToList();
+            var postList = db.TagPost.Join(db.Post, m => m.PostId, o => o.Id, (m,o) => new PostLink { Place = m.Place, Title = o.Title }).ToList();
+
+            var model = new HomePostTagViewModel()
+            {
+                Tag = db.Tag.First(m => m.Name == tagName),
+                PostLinks = postList
+            };
 
             ViewBag.forumName = forumName;
             ViewBag.tagName = tagName;
@@ -24,18 +40,29 @@ namespace PN.Controllers
         }
 
         // GET: Post/Details/5
-        public ActionResult Details(string forumName, string tagName, string postTitle)
+        [AllowAnonymous]
+        public ActionResult Read(string forumName, string tagName, string postTitle)
         {
-            if (postTitle == null) return PageNotFound();
+            if (!db.Post.Any(m => m.Title == postTitle)) return PageNotFound();
 
             var post = db.Post.First(m => m.Title == postTitle);
             if (post == null) return HttpNotFound();
 
+            var postList = db.TagPost.Join(db.Post, m => m.PostId, o => o.Id, (m, o) => new PostLink { Place = m.Place, Title = o.Title }).ToList();
+
+            var model = new HomePostTagViewModel()
+            {
+                Title = post.Title,
+                Body = post.Body,
+                Tag = db.Tag.First(m => m.Name == tagName),
+                PostLinks = postList
+            };
+
             ViewBag.forumName = forumName;
             ViewBag.tagName = tagName;
-            ViewBag.postName = postTitle;
+            ViewBag.postTitle = postTitle;
 
-            return View(post);
+            return View(model);
         }
 
         // GET: Post/Create
@@ -111,6 +138,7 @@ namespace PN.Controllers
 
             ViewBag.forumName = forumName;
             ViewBag.tagName = tagName;
+            ViewBag.postTitle = postTitle;
 
             return View(model);
         }
@@ -127,6 +155,7 @@ namespace PN.Controllers
                 // save post
                 var post = new Post
                 {
+                    Id = model.Id,
                     Title = model.Title,
                     Body = model.Body,
                     Posted = DateTime.Now
@@ -157,13 +186,11 @@ namespace PN.Controllers
         }
 
         // GET: Post/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(string forumName, string tagName, string postTitle)
         {
-            if (id == null)
-            {
-                return PageNotFound();
-            }
-            Post post = db.Post.Find(id);
+            if (db.Post.Any(m => m.Title == postTitle)) return PageNotFound();
+
+            var post = db.Post.First(m => m.Title == postTitle);
             if (post == null)
             {
                 return HttpNotFound();

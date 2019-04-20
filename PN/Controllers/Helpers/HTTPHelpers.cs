@@ -86,7 +86,7 @@ namespace PN.Controllers.Helpers
             var userService = new UserService();
             var user = userService.GetUserInformation();
 
-            return user.ImagePath;
+            return user?.ImagePath;
         }
 
         public static bool IsUserInRole(this IIdentity identity, string role)

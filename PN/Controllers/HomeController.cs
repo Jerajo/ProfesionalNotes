@@ -1,24 +1,29 @@
-﻿using System;
-using PN.Models;
-using System.Web;
-using System.Net;
+﻿using PN.Models;
 using System.Linq;
 using PN.Services;
 using System.Web.Mvc;
 using System.Data.Entity;
-using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 
 namespace PN.Controllers
 {
     public class HomeController : BaseController
     {
-        public async Task<ActionResult> Index()
+        public ActionResult RedirectToFullURL(string ShortURL)
         {
-            IsLoading = await Loading();
-            var model = new HomeViewModel { Forums = db.Forum.Take(6).ToList() };
+            if (!db.RandomLink.Any(m => m.ShortedLink.Contains(ShortURL))) return PageNotFound();
 
-            if (Request.IsAuthenticated)
+            var fullLink = db.RandomLink.First(m => m.ShortedLink.Contains(ShortURL)).FullLink;
+
+            return RedirectToLocal(fullLink);
+        }
+
+        public ActionResult Index()
+        {
+            var isFirstInit = IsFirstInit();
+            var model = new HomeViewModel { Forums = db.Forum.Take(7).ToList() };
+
+            if (!isFirstInit && Request.IsAuthenticated)
             {
                 using (var userService = new UserService())
                 {

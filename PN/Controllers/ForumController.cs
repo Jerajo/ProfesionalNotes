@@ -11,55 +11,22 @@ namespace PN.Controllers
     [Authorize]
     public class ForumController : BaseController
     {
+        #region Anonimous
+
         // GET: Forum
         [AllowAnonymous]
         public ActionResult Index()
         {
+            var isFirstInit = IsFirstInit();
+            // TODO: Filter forums in relevancy order
             return View(db.Forum.ToList());
-        }
-
-        // GET: Forum/Subscribe/5
-        public ActionResult Subscribe(string forumName)
-        {
-            if (!db.Forum.Any(m => m.Name == forumName)) return PageNotFound();
-
-            using (var userService = new UserService())
-            {
-                var userInfo = userService.GetUserInformation();
-                var forum = db.Forum.First(m => m.Name == forumName);
-                var userForumSubcription = db.UserForumSubscription.Where(m => m.UserId == userInfo.Id && m.ForumId == forum.Id).FirstOrDefault();
-
-                if (userForumSubcription == null)
-                {
-                    userForumSubcription = new UserForumSubscription
-                    {
-                        UserId = userInfo.Id,
-                        ForumId = forum.Id,
-                        Score = 0
-                    };
-
-                    forum.UserForumSubscription.Add(userForumSubcription);
-                }
-                else forum.UserForumSubscription.Remove(userForumSubcription);
-
-                db.Entry(forum).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-
-            var service = new LanguagesService();
-            var preious = Request.UrlReferrer.PathAndQuery;
-            var next = $"~/{service.Language}/{service.ForumTitle}";
-            if (preious == null) return RedirectToLocal(next);
-
-            var redirectUrl = (preious.Contains(service.ForumTitle)) ? next : preious;
-
-            return RedirectToLocal(redirectUrl);
         }
 
         // GET: Forum/Details/5
         [AllowAnonymous]
         public ActionResult Details(string forumName)
         {
+            var isFirstInit = IsFirstInit();
             if (string.IsNullOrEmpty(forumName)) return PageNotFound();
 
             var forum = db.Forum.First(m => m.Name == forumName);
@@ -70,14 +37,66 @@ namespace PN.Controllers
                 Id = forum.Id,
                 Name = forum.Name,
                 Desciption = forum.Desciption,
-                ImagePath = forum.ImagePath
+                ImagePath = forum.ImagePath,
             };
 
             return View(model);
         }
 
+        #endregion
+
+        #region UserActivities
+
+        // GET: Forum/Subscribe/5
+        public ActionResult Subscribe(string forumName)
+        {
+            if (!db.Forum.Any(m => m.Name == forumName)) return PageNotFound();
+
+            using (var userService = new UserService())
+            {
+                var UserId = userService.UserInformation.Id;
+                var forum = db.Forum.First(m => m.Name == forumName);
+                var userForumSubcription = db.ForumUser.Where(m => m.UserId == UserId && m.ForumId == forum.Id).FirstOrDefault();
+
+                if (userForumSubcription == null)
+                {
+                    userForumSubcription = new ForumUser
+                    {
+                        UserId = UserId,
+                        ForumId = forum.Id,
+                        Score = 0,
+                        IsSubscribed = true,
+                        IsReadLater = false,
+                        HasRead = false,
+                        Vote = null
+                    };
+
+                    forum.ForumUser.Add(userForumSubcription);
+                    db.Entry(forum).State = EntityState.Modified;
+                }
+                else
+                {
+                    userForumSubcription.IsSubscribed = !userForumSubcription.IsSubscribed;
+                    db.Entry(userForumSubcription).State = EntityState.Modified;
+                }
+
+                db.SaveChanges();
+            }
+
+            var preious = Request.UrlReferrer.PathAndQuery;
+            var next = $"~/{Service.Language}/{Service.ForumTitle}";
+            if (preious == null) return RedirectToLocal(next);
+
+            var redirectUrl = (preious.Contains(Service.ForumTitle)) ? next : preious;
+
+            return RedirectToLocal(redirectUrl);
+        }
+
+        #endregion
+
+        #region Create
+
         // GET: Forum/Create
-        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             var model = new CreateForumViewModel() { ImagePath = "~/Content/images/No-image.svg" };
@@ -90,7 +109,6 @@ namespace PN.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public ActionResult Create(CreateForumViewModel model)
         {
             if (ModelState.IsValid)
@@ -110,40 +128,66 @@ namespace PN.Controllers
                     model.ImageFile.SaveAs(fileName);
                 }
 
-                // save data base
-                var forum = new Forum
+                using (var userService = new UserService())
                 {
-                    Name = model.Name,
-                    Desciption = model.Desciption,
-                    ImagePath = model.ImagePath
-                };
-                db.Forum.Add(forum);
-                db.SaveChanges();
+                    var userId = userService.UserInformation.Id;
 
-                return RedirectToAction("Index");
+                    // save data base
+                    var forum = new Forum
+                    {
+                        UserId = userId,
+                        Name = model.Name,
+                        Desciption = model.Desciption,
+                        ImagePath = model.ImagePath,
+                        ISOLanguage = Service.Language
+                    };
+
+                    var forumUser = new ForumUser
+                    {
+                        UserId = userId,
+                        Score = 0,
+                        IsSubscribed = true,
+                        IsReadLater = false,
+                        HasRead = false,
+                        Vote = null
+                    };
+
+                    forum.ForumUser.Add(forumUser);
+
+                    db.Forum.Add(forum);
+                    db.SaveChanges();
+                }
+
+                return RedirectToLocal($"~/{Service.Language}/{Service.ForumTitle}");
             }
 
             return View(model);
         }
 
+        #endregion
+
+        #region Edit
+
         // GET: Forum/Edit/5
-        [Authorize(Roles = "Admin")]
         public ActionResult Edit(string forumName)
         {
-            if (forumName == null) return PageNotFound();
+            if (!db.Forum.Any(m => m.Name == forumName)) return PageNotFound();
 
-            var forum = db.Forum.First(m => m.Name == forumName);
-            if (forum == null) return HttpNotFound();
-
-            var model = new CreateForumViewModel
+            using (var userService = new UserService())
             {
-                Id = forum.Id,
-                Name = forum.Name,
-                Desciption = forum.Desciption,
-                ImagePath = forum.ImagePath
-            };
+                var forum = db.Forum.First(m => m.Name == forumName);
 
-            return View(model);
+                var model = new CreateForumViewModel
+                {
+                    Id = forum.Id,
+                    UserInformation = forum.UserInformation,
+                    Name = forum.Name,
+                    Desciption = forum.Desciption,
+                    ImagePath = forum.ImagePath
+                };
+
+                return View(model);
+            }
         }
 
         // POST: Forum/Edit/5
@@ -151,7 +195,6 @@ namespace PN.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public ActionResult Edit(CreateForumViewModel model)
         {
             if (ModelState.IsValid)
@@ -172,13 +215,11 @@ namespace PN.Controllers
                 }
 
                 // save data base
-                var forum = new Forum
-                {
-                    Id = model.Id,
-                    Name = model.Name,
-                    Desciption = model.Desciption,
-                    ImagePath = model.ImagePath
-                };
+                var forum = db.Forum.Find(model.Id);
+                forum.Name = model.Name;
+                forum.Desciption = model.Desciption;
+                forum.ImagePath = model.ImagePath;
+
                 db.Entry(forum).State = EntityState.Modified;
                 db.SaveChanges();
 
@@ -188,8 +229,11 @@ namespace PN.Controllers
             return View(model);
         }
 
+        #endregion
+
+        #region Delete
+
         // GET: Forum/Delete/5
-        [Authorize(Roles = "Admin")]
         public ActionResult Delete(string forumName)
         {
             if (forumName == null) return PageNotFound();
@@ -203,7 +247,6 @@ namespace PN.Controllers
         // POST: Forum/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public ActionResult DeleteConfirmed(int id)
         {
             Forum forum = db.Forum.Find(id);
@@ -211,5 +254,7 @@ namespace PN.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        #endregion
     }
 }

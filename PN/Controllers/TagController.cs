@@ -30,14 +30,13 @@ namespace PN.Controllers
         {
             if (!db.Forum.Any(m => m.Name == forumName) || !db.Tag.Any(m => m.Name == tagName))
                 return PageNotFound();
-
+            // TODO: Inplementar User Susciption a Tags
             if (tagName == null) return PageNotFound();
-            var service = new LanguagesService();
             var preious = Request.UrlReferrer.PathAndQuery;
-            var next = $"~/{service.Language}/{service.TagTitle}/{forumName}";
+            var next = $"~/{Service.Language}/{Service.TagTitle}/{forumName}";
             if (preious == null) return RedirectToLocal(next);
 
-            var redirectUrl = (preious.Contains(service.TagTitle)) ? next : preious;
+            var redirectUrl = (preious.Contains(Service.TagTitle)) ? next : preious;
 
             return RedirectToLocal(redirectUrl);
         }
@@ -119,8 +118,7 @@ namespace PN.Controllers
                 db.Tag.Add(tag);
                 db.SaveChanges();
 
-                var service = new LanguagesService();
-                return RedirectToLocal($"~/{service.Language}/{service.TagTitle}/{forum.Name}");
+                return RedirectToLocal($"~/{Service.Language}/{Service.TagTitle}/{forum.Name}");
             }
 
             return View(model);
@@ -192,9 +190,8 @@ namespace PN.Controllers
                     var r = db.Database.SqlQuery(typeof(int), $"INSERT INTO ForumTag VALUES({model.SelectedForumId}, {tag.Id})");
                 }
 
-                var service = new LanguagesService();
                 var forum = db.Forum.Find(model.SelectedForumId);
-                return RedirectToLocal($"~/{service.Language}/{service.TagTitle}/{forum.Name}");
+                return RedirectToLocal($"~/{Service.Language}/{Service.TagTitle}/{forum.Name}");
             }
 
             return View(model);
