@@ -1,27 +1,33 @@
 namespace PN.Models
 {
+    using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
-    [Table("UserForumSubscription")]
-    public partial class UserForumSubscription
+    [Table("TagUser")]
+    public partial class TagUser
     {
         [Key]
         [Column(Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int ForumId { get; set; }
+        public int TagId { get; set; }
 
         [Key]
         [Column(Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int UserId { get; set; }
 
-        [Key]
-        [Column(Order = 2)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int Score { get; set; }
+        public bool IsSubscribed { get; set; }
 
-        public virtual Forum Forum { get; set; }
+        public bool IsReadLater { get; set; }
+
+        public bool HasRead { get; set; }
+
+        public bool? Vote { get; set; }
+
+        public virtual Tag Tag { get; set; }
 
         public virtual UserInformation UserInformation { get; set; }
     }

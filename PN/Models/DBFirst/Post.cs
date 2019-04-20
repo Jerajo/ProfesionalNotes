@@ -4,6 +4,7 @@ namespace PN.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     [Table("Post")]
     public partial class Post
@@ -11,12 +12,14 @@ namespace PN.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Post()
         {
-            TagPost = new List<TagPost>();
             Edition = new List<Edition>();
-            UserInformation = new List<UserInformation>();
+            PostUser = new List<PostUser>();
+            TagPost = new List<TagPost>();
         }
 
         public int Id { get; set; }
+
+        public int UserId { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -28,12 +31,14 @@ namespace PN.Models
         public DateTime Posted { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual List<TagPost> TagPost { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual List<Edition> Edition { get; set; }
 
+        public virtual UserInformation UserInformation { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual List<UserInformation> UserInformation { get; set; }
+        public virtual List<PostUser> PostUser { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual List<TagPost> TagPost { get; set; }
     }
 }

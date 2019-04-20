@@ -14,19 +14,28 @@ namespace PN.Models
 
         #region SETTERS AND GETTERS
 
-        public virtual DbSet<Audit> Audit { get; set; }
         public virtual DbSet<Country> Country { get; set; }
         public virtual DbSet<Edition> Edition { get; set; }
-        public virtual DbSet<EditionLinesLess> EditionLinesLess { get; set; }
-        public virtual DbSet<EditionLinesPluss> EditionLinesPluss { get; set; }
         public virtual DbSet<Forum> Forum { get; set; }
+        public virtual DbSet<ForumUser> ForumUser { get; set; }
+        public virtual DbSet<Language> Language { get; set; }
         public virtual DbSet<Post> Post { get; set; }
+        public virtual DbSet<PostUser> PostUser { get; set; }
+        public virtual DbSet<RandomLink> RandomLink { get; set; }
         public virtual DbSet<Tag> Tag { get; set; }
         public virtual DbSet<TagPost> TagPost { get; set; }
-        public virtual DbSet<UserForumSubscription> UserForumSubscription { get; set; }
+        public virtual DbSet<TagUser> TagUser { get; set; }
+        public virtual DbSet<UserCulture> UserCulture { get; set; }
         public virtual DbSet<UserInformation> UserInformation { get; set; }
-        public virtual DbSet<TagsView> TagsView { get; set; }
+        public virtual DbSet<ForumUserActivityView> ForumUserActivityView { get; set; }
+        public virtual DbSet<PostUserActivityView> PostUserActivityView { get; set; }
+        public virtual DbSet<TagUserActivityView> TagUserActivityView { get; set; }
+        public virtual DbSet<UserEditionListView> UserEditionListView { get; set; }
+        public virtual DbSet<UserForumListView> UserForumListView { get; set; }
         public virtual DbSet<UserInformationView> UserInformationView { get; set; }
+        public virtual DbSet<UserListView> UserListView { get; set; }
+        public virtual DbSet<UserPostListView> UserPostListView { get; set; }
+        public virtual DbSet<UserTagListView> UserTagListView { get; set; }
 
         #endregion
 
@@ -34,54 +43,27 @@ namespace PN.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Audit>()
-                .Property(e => e.UserId)
-                .IsUnicode(false);
-
-            modelBuilder.Entity<Audit>()
-                .Property(e => e.Query)
-                .IsUnicode(false);
-
             modelBuilder.Entity<Country>()
-                .Property(e => e.Name)
-                .IsUnicode(false);
-
-            modelBuilder.Entity<Country>()
-                .HasMany(e => e.UserInformation)
-                .WithMany(e => e.Country)
-                .Map(m => m.ToTable("UserCountry").MapLeftKey("CountryId").MapRightKey("UserId"));
-
-            modelBuilder.Entity<Edition>()
-                .Property(e => e.Title)
-                .IsUnicode(false);
-
-            modelBuilder.Entity<Edition>()
-                .HasMany(e => e.Post)
-                .WithMany(e => e.Edition)
-                .Map(m => m.ToTable("EditionPost").MapLeftKey("EditionId").MapRightKey("PostId"));
-
-            modelBuilder.Entity<Edition>()
-                .HasMany(e => e.UserInformation)
-                .WithMany(e => e.Edition)
-                .Map(m => m.ToTable("EditionUser").MapLeftKey("EditionId").MapRightKey("UserId"));
-
-            modelBuilder.Entity<EditionLinesLess>()
-                .Property(e => e.Body)
-                .IsUnicode(false);
-
-            modelBuilder.Entity<EditionLinesPluss>()
-                .Property(e => e.Body)
-                .IsUnicode(false);
+                .Property(e => e.ISORegion)
+                .IsFixedLength();
 
             modelBuilder.Entity<Forum>()
-                .HasMany(e => e.UserForumSubscription)
-                .WithRequired(e => e.Forum)
-                .WillCascadeOnDelete(false);
+                .Property(e => e.ISOLanguage)
+                .IsFixedLength();
 
             modelBuilder.Entity<Forum>()
                 .HasMany(e => e.Tag)
                 .WithMany(e => e.Forum)
-                .Map(m => m.ToTable("ForumTag").MapLeftKey("IdForum").MapRightKey("IdTag"));
+                .Map(m => m.ToTable("ForumTag").MapLeftKey("ForumId").MapRightKey("TagId"));
+
+            modelBuilder.Entity<Language>()
+                .Property(e => e.ISOLanguage)
+                .IsFixedLength();
+
+            modelBuilder.Entity<Language>()
+                .HasMany(e => e.Forum)
+                .WithRequired(e => e.Language)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Post>()
                 .Property(e => e.Title)
@@ -91,10 +73,9 @@ namespace PN.Models
                 .Property(e => e.Body)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<Post>()
-                .HasMany(e => e.UserInformation)
-                .WithMany(e => e.Post)
-                .Map(m => m.ToTable("PostUser").MapLeftKey("PostId").MapRightKey("UserId"));
+            modelBuilder.Entity<RandomLink>()
+                .Property(e => e.ShortedLink)
+                .IsFixedLength();
 
             modelBuilder.Entity<Tag>()
                 .Property(e => e.Name)
@@ -109,21 +90,83 @@ namespace PN.Models
                 .WithRequired(e => e.Tag)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<UserCulture>()
+                .Property(e => e.ISORegion)
+                .IsFixedLength();
+
+            modelBuilder.Entity<UserCulture>()
+                .Property(e => e.ISOLanguage)
+                .IsFixedLength();
+
             modelBuilder.Entity<UserInformation>()
                 .Property(e => e.Sex)
                 .IsFixedLength();
 
             modelBuilder.Entity<UserInformation>()
-                .HasMany(e => e.UserForumSubscription)
+                .HasMany(e => e.Edition)
                 .WithRequired(e => e.UserInformation)
                 .HasForeignKey(e => e.UserId)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<TagsView>()
+            modelBuilder.Entity<UserInformation>()
+                .HasMany(e => e.Forum)
+                .WithRequired(e => e.UserInformation)
+                .HasForeignKey(e => e.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserInformation>()
+                .HasMany(e => e.ForumUser)
+                .WithRequired(e => e.UserInformation)
+                .HasForeignKey(e => e.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserInformation>()
+                .HasMany(e => e.Post)
+                .WithRequired(e => e.UserInformation)
+                .HasForeignKey(e => e.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserInformation>()
+                .HasMany(e => e.PostUser)
+                .WithRequired(e => e.UserInformation)
+                .HasForeignKey(e => e.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserInformation>()
+                .HasMany(e => e.Tag)
+                .WithRequired(e => e.UserInformation)
+                .HasForeignKey(e => e.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserInformation>()
+                .HasMany(e => e.TagUser)
+                .WithRequired(e => e.UserInformation)
+                .HasForeignKey(e => e.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserInformation>()
+                .HasMany(e => e.UserCulture)
+                .WithRequired(e => e.UserInformation)
+                .HasForeignKey(e => e.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ForumUserActivityView>()
+                .Property(e => e.ISOLanguage)
+                .IsFixedLength();
+
+            modelBuilder.Entity<PostUserActivityView>()
+                .Property(e => e.Title)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<PostUserActivityView>()
+                .Property(e => e.Body)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<TagUserActivityView>()
                 .Property(e => e.Name)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<TagsView>()
+            modelBuilder.Entity<TagUserActivityView>()
                 .Property(e => e.Desciption)
                 .IsUnicode(false);
 
@@ -132,15 +175,19 @@ namespace PN.Models
                 .IsFixedLength();
 
             modelBuilder.Entity<UserInformationView>()
-                .Property(e => e.CountryName)
-                .IsUnicode(false);
+                .Property(e => e.ISORegion)
+                .IsFixedLength();
 
             modelBuilder.Entity<UserInformationView>()
-                .Property(e => e.PostTitle)
+                .Property(e => e.ISOLanguage)
+                .IsFixedLength();
+
+            modelBuilder.Entity<UserPostListView>()
+                .Property(e => e.Title)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<UserInformationView>()
-                .Property(e => e.EditionTitle)
+            modelBuilder.Entity<UserTagListView>()
+                .Property(e => e.Name)
                 .IsUnicode(false);
 
             base.OnModelCreating(modelBuilder);
@@ -166,6 +213,24 @@ namespace PN.Models
             return base.ValidateEntity(entityEntry, items);
         }
         
+        public override int SaveChanges()
+        {
+            foreach (var errors in base.GetValidationErrors())
+            {
+                foreach (var error in errors.ValidationErrors)
+                {
+                    var errorMessage = error.ErrorMessage;
+                    var property = error.PropertyName;
+                }
+                var entity = errors.Entry;
+                // Salta las entidades con errores
+                //this.Entry(errors.Entry).State = EntityState.Detached;
+            }
+
+            try { return base.SaveChanges(); }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+
         #endregion
 
         #region Auxiliary Methods

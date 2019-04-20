@@ -1,8 +1,10 @@
 namespace PN.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     [Table("UserInformationView")]
     public partial class UserInformationView
@@ -14,7 +16,8 @@ namespace PN.Models
 
         [Key]
         [Column(Order = 1)]
-        public string UserId { get; set; }
+        [StringLength(256)]
+        public string UserName { get; set; }
 
         [StringLength(25)]
         public string Name { get; set; }
@@ -32,42 +35,29 @@ namespace PN.Models
 
         public string ImagePath { get; set; }
 
-        public int? Score { get; set; }
+        public int? LastPostId { get; set; }
 
         [StringLength(10)]
         public string Status { get; set; }
 
         [Key]
         [Column(Order = 3)]
-        [StringLength(25)]
-        public string CountryName { get; set; }
+        [StringLength(2)]
+        public string ISORegion { get; set; }
 
         [Key]
         [Column(Order = 4)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int PostId { get; set; }
+        [StringLength(258)]
+        public string NativeRegion { get; set; }
 
         [Key]
         [Column(Order = 5)]
-        [StringLength(100)]
-        public string PostTitle { get; set; }
+        [StringLength(2)]
+        public string ISOLanguage { get; set; }
 
         [Key]
         [Column(Order = 6)]
-        public DateTime PostTime { get; set; }
-
-        [Key]
-        [Column(Order = 7)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int EditionId { get; set; }
-
-        [Key]
-        [Column(Order = 8)]
-        [StringLength(100)]
-        public string EditionTitle { get; set; }
-
-        [Key]
-        [Column(Order = 9)]
-        public DateTime EditionPosted { get; set; }
+        [StringLength(258)]
+        public string NativeLanguage { get; set; }
     }
 }

@@ -4,6 +4,7 @@ namespace PN.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     [Table("Forum")]
     public partial class Forum
@@ -11,29 +12,42 @@ namespace PN.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Forum()
         {
-            UserForumSubscription = new List<UserForumSubscription>();
+            ForumUser = new List<ForumUser>();
             Tag = new List<Tag>();
         }
 
         public int Id { get; set; }
+
+        public int UserId { get; set; }
 
         [Required]
         [StringLength(250)]
         public string Name { get; set; }
 
         [Required]
-        [StringLength(500)]
         public string Desciption { get; set; }
 
-        public string _imagePath;
+        [Required]
         public string ImagePath
         {
-            get { return _imagePath; }
-            set { _imagePath = String.IsNullOrEmpty(value) ? "~/Content/images/No-Image.svg" : value; }
+            get => _imagePath;
+            set
+            {
+                _imagePath = value ?? "~/Content/images/No-Image.svg";
+            }
         }
+        private string _imagePath;
+
+        [Required]
+        [StringLength(2)]
+        public string ISOLanguage { get; set; }
+
+        public virtual Language Language { get; set; }
+
+        public virtual UserInformation UserInformation { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual List<UserForumSubscription> UserForumSubscription { get; set; }
+        public virtual List<ForumUser> ForumUser { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual List<Tag> Tag { get; set; }

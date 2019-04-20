@@ -6,25 +6,32 @@ namespace PN.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("TagPost")]
-    public partial class TagPost
+    [Table("UserTagListView")]
+    public partial class UserTagListView
     {
         [Key]
         [Column(Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int TagId { get; set; }
+        public int UserId { get; set; }
 
         [Key]
         [Column(Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int PostId { get; set; }
+        public int Id { get; set; }
 
         [Key]
         [Column(Order = 2)]
-        public string Place { get; set; }
+        [StringLength(250)]
+        public string Name { get; set; }
 
-        public virtual Post Post { get; set; }
+        public int? SubscriptionCount { get; set; }
 
-        public virtual Tag Tag { get; set; }
+        public int? ReadLaterCout { get; set; }
+
+        public int? HasReadCount { get; set; }
+
+        public int? PositiveVoteCount { get; set; }
+
+        public int? NegativeVoteCount { get; set; }
     }
 }
