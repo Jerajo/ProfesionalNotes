@@ -32,8 +32,7 @@ function subcription(control) {
 // guarda los cookies de terminos y condiciones
 function aceptCookieConditions() {
     $("#cookieConsent").remove();
-    $.cookie("cookieString", "acepted", { path: '/' });
-    alert("Me ejecuto coño");
+    $.cookie("cookieString", "acepted", { expires: 18250, path: '/' });
 }
 
 // Preview img before upload

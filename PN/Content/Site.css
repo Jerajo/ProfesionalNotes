@@ -1,16 +1,10 @@
 ﻿/* -------------------------------- Cuerpo -------------------------------- */
 body {
-  
+
 }
 
 /* -------------------------------- Contenido -------------------------------- */
 /* Set padding to keep content from hitting the edges */
-.container.body-content {
-  padding-top: 0px;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
 #page-container {
   display: flex;
   min-height: 100vh;
@@ -18,16 +12,45 @@ body {
 }
 
 #content-main {
+  padding: 15px 0px;
   flex: 1;
+}
+
+#content-main.row {
+  margin: 0px;
+  padding: 0px;
+  max-width: 100%;
 }
 
 /* -------------------------------- Menú Lateral -------------------------------- */
 #laterl-menue {
-
+  text-align: left;
+  overflow-wrap: break-word;
+  overflow-x: auto;
+  overflow-y: auto;
 }
+
+#laterl-menue > ol {
+  padding-left: 0;
+  padding-left: 15px;
+}
+
+/*#laterl-menue > ol {
+  counter-reset: item;
+}*/
+
+li {
+  display: list-item;
+}
+
+/*#laterl-menue > ol > li:before {
+  content: counters(item, ".") " ";
+  counter-increment: item;
+}*/
 
 /* -------------------------------- Píe -------------------------------- */
 #footer {
+
 }
 
 /* -------------------------------- Barra de Navegación -------------------------------- */
@@ -70,14 +93,6 @@ body {
 
 label {
   cursor: inherit;
-}
-
-/* -------------------------------- PAGE -------------------------------- */
-/* Páginas o secciones (div) que ocupán todo el alto de la ventana divididos en #regiones
-   que se navegan con la rueda del ratón.
-*/
-.sector {
-
 }
 
 /* -------------------------------- TÍTULOS -------------------------------- */
