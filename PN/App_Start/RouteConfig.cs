@@ -56,6 +56,12 @@ namespace PN
             }
 
             routes.MapRoute(
+                name: "RedirectToFullURL",
+                url: "{language}/{ShortURL}",
+                defaults: new { controller = "Home", action = "RedirectToFullURL", language = "en", }
+            );
+
+            routes.MapRoute(
                 name: "rootWhitOptionalLanguage",
                 url: "{language}",
                 defaults: new { controller = "Home", action = "Index", language = "en", }
