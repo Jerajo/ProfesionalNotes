@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<PN.Models.Forum>
 @{ 
     var service = new LanguagesService();
-    var isAdmin = User.Identity.IsUserInRole("Admin");
+    var isAutenticated = Request.IsAuthenticated;
+    var userId = User.Identity.GetUserInformationId();
     //var btnSubCount = 0; // TODO: insert the ids for subcrition buttons
 }
 
@@ -13,12 +14,12 @@
 
 @foreach (var forum in Model)
 {
-    var isSubcribed = false;
-    if (Request.IsAuthenticated && forum.UserForumSubscription.Count > 0)
+    bool? isSubcribed = false;
+    if (isAutenticated && forum.ForumUser.Count > 0)
     {
-        isSubcribed = forum.UserForumSubscription.Any(m => m.UserId == User.Identity.GetUserInformationId());
+        isSubcribed = forum.ForumUser.Where(m => m.UserId == userId).FirstOrDefault()?.IsSubscribed;
     }
-    var btnClass = (isSubcribed) ? "btn-default" : "btn-info";
+    var btnClass = (isSubcribed == true) ? "btn-default" : "btn-info";
     <div class="box-button topic">
         <a href="~/@service.Language/@service.TagTitle/@forum.Name">
             <img class="img-fluid" src="@Url.Content(forum.ImagePath)" alt="Imagen Tema" />
@@ -29,7 +30,7 @@
             <a href="~/@service.Language/@service.ForumTitle/@forum.Name/Subscribe" class="btn @btnClass navbar-btn" onclick="Subcription(this)">Unirse</a>
         </div>
         <br />
-        @if (isAdmin)
+        @if (User.Identity.IsUserInRole("Admin"))
         {
             <div class="btn-group d-flex" role="group">
                 <a href="~/@service.Language/@service.ForumTitle/@forum.Name/Edit" class = "btn btn-info navbar-btn">Edit</a>
@@ -39,13 +40,10 @@
     </div>
 }
 
-@if (isAdmin)
-{
-    <div class="box-button topic">
-        <img class="img-fluid" src="~/Content/images/logo.svg" alt="Imagen Tema" />
-        <a href="~/@service.Language/@service.ForumTitle/New/Create" class="btn btn-info btn-block">
-            <h3>Crear un Foro</h3>
-        </a>
-    </div>
-}
+<div class="box-button topic">
+    <img class="img-fluid" src="~/Content/images/logo.svg" alt="Imagen Tema" />
+    <a href="~/@service.Language/@service.ForumTitle/New/Create" class="btn btn-info btn-block">
+        <h3>Crear un Foro</h3>
+    </a>
+</div>
 <div class="clearfix"></div>

@@ -1,4 +1,5 @@
-﻿@model PN.Models.LoginViewModel
+﻿@using PN.Models
+@model LoginViewModel
 @{
     ViewBag.Title = "Iniciar Sección";
     var service = new LanguagesService();
@@ -46,9 +47,9 @@
                     <a href="~/@service.Language/@service.AccountTitle/Register" class="btn btn-info">Registrar como nuevo usuario</a>
                 </p>
                 @* Enable this once you have account confirmation enabled for password reset functionality
-                    <p>
-                        @Html.ActionLink("Forgot your password?", "ForgotPassword")
-                    </p>*@
+                <p>
+                    @Html.ActionLink("Forgot your password?", "ForgotPassword")
+                </p>*@
             }
         </section>
     </div>

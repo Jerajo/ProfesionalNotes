@@ -1,0 +1,16 @@
+﻿@model IEnumerable<PN.Models.PostLink>
+@{ 
+    var service = new LanguagesService();
+}
+
+<div id="laterl-menue" class="sidebar col-sm-2 bg-light">
+    <ol>
+        @foreach (var post in Model)
+        {
+            <li>
+                <a href="~/@service.Language/@service.PostTitle/@ViewBag.forumName/@ViewBag.tagName/@post.Title/Read">@post.Title</a>
+            </li>
+        }
+            <a href="~/@service.Language/@service.PostTitle/@ViewBag.forumName/@ViewBag.tagName/New/Create" class="btn btn-block btn-success">Crear</a>
+    </ol>
+</div>

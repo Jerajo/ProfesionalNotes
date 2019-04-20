@@ -1,6 +1,4 @@
-﻿@using Westwind.Web.Markdown
-@model PN.Models.CreatePostViewModel
-
+﻿@model PN.Models.CreatePostViewModel
 @{
     ViewBag.Title = "Edit";
     List<SelectListItem> Places = new List<SelectListItem>();
@@ -13,59 +11,59 @@
 <h2>Edit</h2>
 
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Edit", "Post", new { Id = Model.Id }, FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>Post</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
+<div class="form-horizontal">
+    <h4>Post</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.Id)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Body, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Body, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">Vista Previa</label>
-            <div class="col-md-10">
-                @Markdown.ParseHtmlString(Model.Body)
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.SelectedTadId, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(m => m.SelectedTadId, new SelectList(Model.Tags, "Id", "Name", 0), new { @class = "form-control", id = "downList" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.SelectedPlace, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(m => m.SelectedPlace, new SelectList(Places, "Value", "Text", Places.Count - 1), new { @class = "form-control", id = "downList" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
         </div>
     </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Body, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Body, new { htmlAttributes = new { @class = "form-control", Id = "post-editor" } })
+            @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Vista Previa</label>
+        <div id="post-preview" class="col-md-10">
+            @Markdown.ParseHtmlString(Model.Body)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.SelectedTadId, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(m => m.SelectedTadId, new SelectList(Model.Tags, "Id", "Name", 0), new { @class = "form-control", id = "downList" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.SelectedPlace, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(m => m.SelectedPlace, new SelectList(Places, "Value", "Text", Places.Count - 1), new { @class = "form-control", id = "downList" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
+        </div>
+    </div>
+</div>
 }
 
 <div>
@@ -74,4 +72,12 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="text/javascript">
+        $("#post-editor").on('input', function (e)
+        {
+            $("#post-preview").html(marked($("#post-editor").val()));
+            console.log("me ejecuto");
+        });
+    </script>
 }

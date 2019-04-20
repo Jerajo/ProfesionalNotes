@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{ 
+    var contentClassModifier = ViewBag.ContentClassModifier;
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -16,11 +19,13 @@
             Html.RenderPartial("_NavigationBar");
             Html.RenderPartial("_CookieConsent");
         }
-        <div id="content-main" class="container body-content">
+        <div id="content-main" class="container @contentClassModifier">
             @RenderBody()
         </div>
         <footer id="footer" class="text-center">
-            <p>&copy; @DateTime.Now.Year - Desarrollado por <a href="https://github.com/Jerajo" target="_blank">Jesse R. Jose</a>.</p>
+            <p>&copy; @DateTime.Now.Year - Desarrollado por <a href="https://github.com/Jerajo" target="_blank">Jesse R. Jose</a>. |
+            <a href="~/en/Articles/Software/HTML/Introducci%C3%B3n/Edit">Working On</a>
+            </p>
         </footer>
     </div>
     @Scripts.Render("~/bundles/jquery")

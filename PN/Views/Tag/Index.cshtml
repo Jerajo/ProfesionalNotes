@@ -3,11 +3,11 @@
     var service = new LanguagesService();
     var isAdmin = User.Identity.IsUserInRole("Admin");
     var isAutenticated = Request.IsAuthenticated;
-    var userId = User.Identity.GetUserInformationId();
+    //var userId = User.Identity.GetUserInformationId();
     ViewBag.Title = service.TagTitle;
 }
 
-<h1 class="title">TEMAS</h1>
+<h1 class="title">@ViewBag.forumName</h1>
 <hr class="title" />
 @*<div class="separator"></div>*@
 
@@ -39,13 +39,10 @@
     </div>
 }
 
-@if (isAdmin)
-{
-    <div class="box-button topic">
-        <img class="img-fluid" src="~/Content/images/logo.svg" alt="Imagen Tema" />
-        <a href="~/@service.Language/@service.TagTitle/@ViewBag.forumName/New/Create" class="btn btn-info navbar-btn">
-            <h3>Crear un Tag</h3>
-        </a>
-    </div>
-}
+<div class="box-button topic">
+    <img class="img-fluid" src="~/Content/images/logo.svg" alt="Imagen Tema" />
+    <a href="~/@service.Language/@service.TagTitle/@ViewBag.forumName/New/Create" class="btn btn-info navbar-btn">
+        <h3>Crear un Tag</h3>
+    </a>
+</div>
 <div class="clearfix"></div>

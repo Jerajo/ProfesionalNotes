@@ -1,0 +1,32 @@
+﻿@model PN.Models.HomePostTagViewModel
+@{
+    var service = new LanguagesService();
+    ViewBag.Title = service.PostTitle;
+    ViewBag.ContentClassModifier = "row";
+    Html.RenderPartial("_Sidebar", Model.PostLinks);
+}
+<div class="col-sm-10">
+    <h1 class="title">@ViewBag.forumName > @ViewBag.tagName > @Model.Title</h1>
+    <hr class="title" />
+    @*<div class="separator"></div>*@
+    <div class="dl-horizontal">
+        <div>
+            @Markdown.ParseHtmlString(Model.Body)
+        </div>
+        <div class="form-group">
+            @Html.DisplayNameFor(model => model.Posted)
+            <p>@Model.Posted.ToString("yyyy/MM/dd")</p>
+        </div>
+    </div>
+    <div class="w-100">
+        @*TODO: Multilanguage*@
+        <div class="btn-group">
+            <a class="btn btn-info" href="~/@service.Language/@service.PostTitle/@ViewBag.forumName/@ViewBag.tagName/@Model.Title/Edit">Editar</a>
+            @if (User.Identity.IsUserInRole("Admin"))
+            {
+                <a class="btn btn-outline-danger" href="~/@service.Language/@service.PostTitle/@ViewBag.forumName/@ViewBag.tagName/@Model.Title/Delete">Eliminar</a>
+            }
+        </div>
+        <a class="float-right" href="~/@service.Language/@service.PostTitle/@ViewBag.forumName/@ViewBag.tagName/@Model.Title">Ir a la lista de artículos</a>
+    </div>
+</div>
